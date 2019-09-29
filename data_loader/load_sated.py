@@ -50,16 +50,16 @@ def process_texts(texts, vocabs):
 
 def process_vocabs(vocabs, num_words=10000):
     counter = Counter(vocabs)
-    count_pairs = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
-    print('Loaded {} vocabs'.format(len(count_pairs)))
+    count_pairs = sorted(list(counter.items()), key=lambda x: (-x[1], x[0]))
+    print(('Loaded {} vocabs'.format(len(count_pairs))))
 
     if num_words is not None:
         count_pairs = count_pairs[:num_words - 1]
 
-    print count_pairs[:50]
+    print(count_pairs[:50])
 
     words, _ = list(zip(*count_pairs))
-    word_to_id = dict(zip(words, np.arange(len(words))))
+    word_to_id = dict(list(zip(words, np.arange(len(words)))))
     return word_to_id
 
 
@@ -124,8 +124,8 @@ def load_sated_data_by_user(num_users=100, num_words=10000, test_on_user=False, 
         attacker_users = all_users[num_users * 2: num_users * 4]
         # np.random.seed(None)
         train_users = np.random.choice(attacker_users, size=num_users, replace=False)
-        print len(train_users)
-        print train_users[:10]
+        print(len(train_users))
+        print(train_users[:10])
 
     user_src_texts = defaultdict(list)
     user_trg_texts = defaultdict(list)

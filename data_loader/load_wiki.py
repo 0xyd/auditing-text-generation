@@ -1,4 +1,4 @@
-from load_reddit import build_vocab
+from .load_reddit import build_vocab
 from collections import defaultdict
 import numpy as np
 
@@ -22,7 +22,7 @@ def load_wiki_lines(filename=WIKI_TRAIN_PATH, num_lines=100):
             data.append(arr + ['<eos>'])
             if len(data) >= num_lines > 0:
                 break
-    print num_lines, len(data)
+    print(num_lines, len(data))
     return data
 
 
@@ -35,12 +35,12 @@ def load_wiki_test_data():
 
 def load_wiki_by_users(num_users=200, num_data_per_user=100, num_words=5000, vocabs=None):
     train_data = load_wiki_lines(num_lines=2 * num_users * num_data_per_user)
-    print "Splitting data to {} users, each has {} texts".format(num_users * 2, num_data_per_user)
+    print("Splitting data to {} users, each has {} texts".format(num_users * 2, num_data_per_user))
 
     all_users = np.arange(num_users * 2)
     np.random.seed(None)
     train_users = np.random.choice(all_users, size=num_users, replace=False)
-    print train_users[:10]
+    print(train_users[:10])
 
     user_comments = defaultdict(list)
     all_words = []

@@ -15,23 +15,23 @@ PTB_DATA_DIR = './ptb/simple-examples/data/'
 
 
 def translate(t):
-    t = t.replace(u'\u2018', '\'')
-    t = t.replace(u'\u2019', '\'')
-    t = t.replace(u'\u201c', '\"')
-    t = t.replace(u'\u201d', '\"')
-    t = t.replace(u'\u2013', '-')
-    t = t.replace(u'\u2014', '-')
+    t = t.replace('\u2018', '\'')
+    t = t.replace('\u2019', '\'')
+    t = t.replace('\u201c', '\"')
+    t = t.replace('\u201d', '\"')
+    t = t.replace('\u2013', '-')
+    t = t.replace('\u2014', '-')
 
-    t = t.replace(u'\u2026', '')
-    t = t.replace(u'\ufffd', '')
-    t = t.replace(u'\ufe0f', '')
-    t = t.replace(u'\u035c', '')
-    t = t.replace(u'\u0296', '')
-    t = t.replace(u'\u270a', '')
-    t = t.replace(u'*', '')
-    t = t.replace(u'~', '')
+    t = t.replace('\u2026', '')
+    t = t.replace('\ufffd', '')
+    t = t.replace('\ufe0f', '')
+    t = t.replace('\u035c', '')
+    t = t.replace('\u0296', '')
+    t = t.replace('\u270a', '')
+    t = t.replace('*', '')
+    t = t.replace('~', '')
 
-    t = t.replace(u'\ufb00', 'ff')
+    t = t.replace('\ufb00', 'ff')
 
     return t
 
@@ -75,7 +75,7 @@ def write_processed_comments():
                 new_line = ' '.join(words)
                 # print new_line
                 new_lines.append(new_line)
-        print user, cnt
+        print(user, cnt)
 
         with open(REDDIT_PROCESSED_PATH + user, 'wb') as f:
             for line in new_lines:
@@ -95,7 +95,7 @@ def read_top_users(num_users=100, random=True, min_count=200):
             users.append(user)
             cnts.append(cnt)
 
-    print len(users), sum(cnts)
+    print(len(users), sum(cnts))
 
     cnts = np.asarray(cnts)
     if random:
@@ -108,7 +108,7 @@ def read_top_users(num_users=100, random=True, min_count=200):
         top_indices = np.argsort(-cnts)[:num_users]
     top_users = np.asarray(users)[top_indices]
 
-    print('Loading {} comments for {} users'.format(cnts[top_indices].sum(), num_users))
+    print(('Loading {} comments for {} users'.format(cnts[top_indices].sum(), num_users)))
 
     return top_users
 
@@ -132,14 +132,14 @@ def read_random_users(num_users=100, num_top_users=100):
 
 def build_vocab(data, num_words=20000):
     counter = Counter(data)
-    count_pairs = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
-    print('Loaded {} vocabs'.format(len(count_pairs)))
+    count_pairs = sorted(list(counter.items()), key=lambda x: (-x[1], x[0]))
+    print(('Loaded {} vocabs'.format(len(count_pairs))))
 
     if num_words is not None:
         count_pairs = count_pairs[:num_words - 1]
 
     words, _ = list(zip(*count_pairs))
-    word_to_id = dict(zip(words, np.arange(len(words))))
+    word_to_id = dict(list(zip(words, np.arange(len(words)))))
     return word_to_id
 
 
@@ -171,11 +171,11 @@ def read_top_user_comments(num_users=200, num_words=5000, max_token=None, vocabs
                            sample_user=False, load_raw=False):
     if sample_user and top_users is None:
         top_users = read_top_users(num_users * 4)[num_users * 2: num_users * 4]
-        print len(top_users)
+        print(len(top_users))
 
         np.random.seed(None)
         top_users = np.random.choice(top_users, size=num_users, replace=False)
-        print len(top_users)
+        print(len(top_users))
     elif top_users is None:
         top_users = read_top_users(num_users)
 
@@ -245,7 +245,7 @@ def read_test_comments():
             if len(words) > 2:
                 test_comments.append(words)
 
-    print('Loaded {} test data'.format(len(test_comments)))
+    print(('Loaded {} test data'.format(len(test_comments))))
     return test_comments
 
 
@@ -263,12 +263,12 @@ def read_ptb_data_by_user(num_users=100, num_words=5000, vocabs=None):
 
     l = len(train_data)
     num_data_per_user = l // (num_users * 2)
-    print "Splitting data to {} users, each has {} texts".format(num_users * 2, num_data_per_user)
+    print("Splitting data to {} users, each has {} texts".format(num_users * 2, num_data_per_user))
 
     all_users = np.arange(num_users * 2)
     np.random.seed(None)
     train_users = np.random.choice(all_users, size=num_users, replace=False)
-    print train_users[:10]
+    print(train_users[:10])
 
     user_comments = defaultdict(list)
     all_words = []

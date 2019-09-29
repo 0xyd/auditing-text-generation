@@ -6,7 +6,7 @@ import os
 from nltk.tokenize import word_tokenize
 from collections import Counter, defaultdict
 from itertools import chain
-from load_sated import process_vocabs, process_texts
+from .load_sated import process_vocabs, process_texts
 
 
 DATA_PATH = '/hdd/song/nlp/cornell_movie_dialogs_corpus/'
@@ -68,8 +68,8 @@ def count_character_lines():
         character = line["characterID"]
         character_counter[character] += 1
 
-    print len(character_counter)
-    print character_counter.most_common(100)
+    print(len(character_counter))
+    print(character_counter.most_common(100))
 
 
 def save_extracted_cornell_movie():
@@ -93,7 +93,7 @@ def save_extracted_cornell_movie():
             src_chars.append(conv_line_objs[i]["characterID"])
             trg_chars.append(conv_line_objs[i + 1]["characterID"])
 
-    print len(src_texts), len(trg_texts)
+    print(len(src_texts), len(trg_texts))
 
     with io.open(DATA_PATH + 'extracted_src_trg.txt', 'w', encoding='iso-8859-1') as f:
         for st, sc, tt, tc in zip(src_texts, src_chars, trg_texts, trg_chars):
@@ -182,7 +182,7 @@ def load_cornell_movie_by_user(num_users=100, num_words=5000, test_on_user=False
 
     user_counter = Counter(src_users)
     all_users = np.asarray([tup[0] for tup in user_counter.most_common() if tup[1] >= min_count])
-    print 'Loaded {} users'.format(len(all_users))
+    print('Loaded {} users'.format(len(all_users)))
 
     np.random.seed(12345)
     np.random.shuffle(all_users)
@@ -195,7 +195,7 @@ def load_cornell_movie_by_user(num_users=100, num_words=5000, test_on_user=False
         attacker_users = all_users[num_users * 2: num_users * 4]
         np.random.seed(None)
         train_users = np.random.choice(attacker_users, size=num_users, replace=False)
-        print train_users[:10]
+        print(train_users[:10])
 
     user_src_texts = defaultdict(list)
     user_trg_texts = defaultdict(list)
@@ -310,7 +310,7 @@ def save_extracted_ubuntu():
             src_texts.append('\t'.join(st))
             trg_texts.append('\t'.join(tt))
 
-    print len(src_texts), len(trg_texts)
+    print(len(src_texts), len(trg_texts))
 
     with open(UBUNTU_PATH + 'extracted_src_trg.txt', 'wb') as f:
         for st, tt in zip(src_texts, trg_texts):
