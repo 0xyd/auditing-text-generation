@@ -10,10 +10,10 @@ from sklearn.metrics import roc_auc_score, accuracy_score, classification_report
 from sklearn.preprocessing import Normalizer, StandardScaler
 from sklearn.svm import SVC
 
-from .helper import flatten_data
-from .data_loader.load_sated import process_texts, process_vocabs, load_texts, load_users, load_sated_data_by_user, \
+from helper import flatten_data
+from data_loader.load_sated import process_texts, process_vocabs, load_texts, load_users, load_sated_data_by_user, \
     SATED_TRAIN_USER, SATED_TRAIN_FR, SATED_TRAIN_ENG, read_europarl_file, EUROPARL_FREN_FR, EUROPARL_FREN_EN
-from .sated_nmt import build_nmt_model, words_to_indices, MODEL_PATH, OUTPUT_PATH
+from sated_nmt import build_nmt_model, words_to_indices, MODEL_PATH, OUTPUT_PATH
 
 
 def load_cross_domain_shadow_user_data(train_users, num_users=100, num_words=10000, num_data_per_user=150, seed=12345):

@@ -1,14 +1,14 @@
 from keras import Model
 from keras.layers import Input, Embedding, LSTM, Dropout, Dense, CuDNNLSTM, CuDNNGRU
-from .helper import DenseTransposeTied
+from helper import DenseTransposeTied
 from keras.optimizers import Adam
 
 import keras.backend as K
 import copy
 
 from collections import defaultdict
-from .data_loader.load_cornell_movie import load_ubuntu_by_user, load_cornell_movie_by_user
-from .sated_nmt import beam_search, bleu_score
+from data_loader.load_cornell_movie import load_ubuntu_by_user, load_cornell_movie_by_user
+from sated_nmt import beam_search, bleu_score
 
 import pprint
 import numpy as np

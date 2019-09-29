@@ -7,10 +7,10 @@ import keras.backend as K
 import numpy as np
 from nltk.tokenize import word_tokenize
 
-from .data_loader.load_reddit import read_top_users, REDDIT_PROCESSED_PATH, build_vocab, read_top_user_comments, \
+from data_loader.load_reddit import read_top_users, REDDIT_PROCESSED_PATH, build_vocab, read_top_user_comments, \
     remove_puncs
-from .data_loader.load_wiki import WIKI_TRAIN_PATH, load_wiki_lines
-from .reddit_lm import words_to_indices, MODEL_PATH, RESULT_PATH, build_lm_model
+from data_loader.load_wiki import WIKI_TRAIN_PATH, load_wiki_lines
+from reddit_lm import words_to_indices, MODEL_PATH, RESULT_PATH, build_lm_model
 
 
 def load_cross_domain_shadow_user_data(train_users, num_users=100, num_data_per_user=100, num_words=5000):

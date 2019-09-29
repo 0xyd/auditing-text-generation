@@ -7,8 +7,8 @@ from keras.layers import Input, Embedding, LSTM, Dropout, Dense, CuDNNLSTM, Add,
 from keras.optimizers import Adam
 from keras.regularizers import l2
 
-from .data_loader.load_sated import load_europarl_by_user, load_sated_data_by_user
-from .helper import DenseTransposeTied, Attention
+from data_loader.load_sated import load_europarl_by_user, load_sated_data_by_user
+from helper import DenseTransposeTied, Attention
 
 MODEL_PATH = '/hdd/song/nlp/sated-release-0.9.0/model/'
 OUTPUT_PATH = '/hdd/song/nlp/sated-release-0.9.0/output/'
