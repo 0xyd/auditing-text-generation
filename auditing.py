@@ -5,9 +5,9 @@ from sklearn.preprocessing import StandardScaler, Normalizer
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score, precision_recall_fscore_support
 from sklearn.svm import LinearSVC
 
-from sated_nmt import OUTPUT_PATH as SATED_OUTPUT_PATH
-from reddit_lm import RESULT_PATH as REDDIT_OUTPUT_PATH
-from dialogue import OUTPUT_PATH as CORNELL_OUTPUT_PATH
+from .sated_nmt import OUTPUT_PATH as SATED_OUTPUT_PATH
+from .reddit_lm import RESULT_PATH as REDDIT_OUTPUT_PATH
+from .dialogue import OUTPUT_PATH as CORNELL_OUTPUT_PATH
 
 
 def histogram_feats(ranks, bins=100, top_words=5000, num_words=5000, relative=False):
@@ -125,7 +125,7 @@ def ranks_to_feats(ranks, labels=None, prop=1.0, dim=100, num_words=5000, top_wo
 
         # print i, r
         if isinstance(r[0], int):
-            print i
+            print(i)
         else:
             r = np.concatenate(r)
 
@@ -177,7 +177,7 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
         y_train = np.concatenate(y_train)
         np.savez(audit_save_path, X_train, y_train, X_test, y_test)
 
-    print X_train.shape, y_train.shape
+    print(X_train.shape, y_train.shape)
 
     if norm:
         normalizer = Normalizer(norm='l2')
@@ -195,7 +195,7 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
     y_pred = clf.predict(X_test)
     y_score = clf.decision_function(X_test)
 
-    print classification_report(y_pred=y_pred, y_true=y_test)
+    print(classification_report(y_pred=y_pred, y_true=y_test))
 
     acc = accuracy_score(y_test, y_pred)
     auc = roc_auc_score(y_test, y_score)
@@ -203,5 +203,5 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
     pre = pres[1]
     rec = recs[1]
 
-    print 'precision={}, recall={}, acc={}, auc={}'.format(pre, rec, acc, auc)
+    print('precision={}, recall={}, acc={}, auc={}'.format(pre, rec, acc, auc))
     return acc, auc, pre, rec

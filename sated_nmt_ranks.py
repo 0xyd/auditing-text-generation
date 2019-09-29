@@ -10,10 +10,10 @@ from sklearn.metrics import roc_auc_score, accuracy_score, classification_report
 from sklearn.preprocessing import Normalizer, StandardScaler
 from sklearn.svm import SVC
 
-from helper import flatten_data
-from data_loader.load_sated import process_texts, process_vocabs, load_texts, load_users, load_sated_data_by_user, \
+from .helper import flatten_data
+from .data_loader.load_sated import process_texts, process_vocabs, load_texts, load_users, load_sated_data_by_user, \
     SATED_TRAIN_USER, SATED_TRAIN_FR, SATED_TRAIN_ENG, read_europarl_file, EUROPARL_FREN_FR, EUROPARL_FREN_EN
-from sated_nmt import build_nmt_model, words_to_indices, MODEL_PATH, OUTPUT_PATH
+from .sated_nmt import build_nmt_model, words_to_indices, MODEL_PATH, OUTPUT_PATH
 
 
 def load_cross_domain_shadow_user_data(train_users, num_users=100, num_words=10000, num_data_per_user=150, seed=12345):
@@ -108,7 +108,7 @@ def load_shadow_user_data(train_users, num_users=100, num_words=10000, seed=1234
 
     attacker_users = all_users[num_users * 2: num_users * 4]
     test_users = np.setdiff1d(attacker_users, train_users)
-    print len(train_users), len(test_users)
+    print(len(train_users), len(test_users))
 
     user_src_texts = defaultdict(list)
     user_trg_texts = defaultdict(list)
@@ -227,7 +227,7 @@ def get_shadow_ranks(exp_id=0, num_users=200, num_words=5000, mask=False, h=128,
     shadow_train_users = np.load(MODEL_PATH + shadow_user_path)['arr_0']
     shadow_train_users = list(shadow_train_users)
 
-    print shadow_user_path
+    print(shadow_user_path)
 
     save_dir = OUTPUT_PATH + 'shadow_exp{}_{}/'.format(exp_id, num_users)
     if not os.path.exists(save_dir):
@@ -341,7 +341,7 @@ def user_mi_attack(num_exp=10, dim=100, prop=1.0, num_words=5000, cross_domain=T
     X_train = np.vstack(X)
     y_train = np.concatenate(y)
 
-    print X_train.shape, y_train.shape
+    print(X_train.shape, y_train.shape)
     normalizer = Normalizer(norm='l1')
     X_train = normalizer.fit_transform(X_train)
     X_test = normalizer.fit_transform(X_test)
@@ -357,9 +357,9 @@ def user_mi_attack(num_exp=10, dim=100, prop=1.0, num_words=5000, cross_domain=T
     y_score = clf.decision_function(X_test)  # [:, 1]
     y_pred = clf.predict(X_test)
 
-    print classification_report(y_pred=y_pred, y_true=y_test)
-    print 'ACC:', accuracy_score(y_test, y_pred)
-    print 'AUC:', roc_auc_score(y_test, y_score)
+    print(classification_report(y_pred=y_pred, y_true=y_test))
+    print('ACC:', accuracy_score(y_test, y_pred))
+    print('AUC:', roc_auc_score(y_test, y_score))
 
 
 def test_vocab():
@@ -380,11 +380,11 @@ def test_vocab():
 
     n = float(len(train_data))
     b = np.sum(train_data >= 1000) / n
-    print 1 - b, b, n
+    print(1 - b, b, n)
 
     n = float(len(test_data))
     b = np.sum(test_data >= 1000) / n
-    print 1 - b, b, n
+    print(1 - b, b, n)
 
 
 if __name__ == '__main__':

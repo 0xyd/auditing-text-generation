@@ -1,14 +1,14 @@
 from keras import Model
 from keras.layers import Input, Embedding, LSTM, Dropout, Dense, CuDNNLSTM, CuDNNGRU
-from helper import DenseTransposeTied
+from .helper import DenseTransposeTied
 from keras.optimizers import Adam
 
 import keras.backend as K
 import copy
 
 from collections import defaultdict
-from data_loader.load_cornell_movie import load_ubuntu_by_user, load_cornell_movie_by_user
-from sated_nmt import beam_search, bleu_score
+from .data_loader.load_cornell_movie import load_ubuntu_by_user, load_cornell_movie_by_user
+from .sated_nmt import beam_search, bleu_score
 
 import pprint
 import numpy as np
@@ -25,7 +25,7 @@ def group_texts_by_len(src_texts, trg_texts, bs=20):
     for src, trg in zip(src_texts, trg_texts):
         buckets[len(src)].append((src, trg))
 
-    for src_len, bucket in buckets.items():
+    for src_len, bucket in list(buckets.items()):
         np.random.shuffle(bucket)
         num_batches = int(np.ceil(len(bucket) * 1.0 / bs))
         for i in range(num_batches):
@@ -157,7 +157,7 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
 
     for i, user in enumerate(users):
         if loo is not None and i == loo:
-            print "Leave user {} out".format(user)
+            print("Leave user {} out".format(user))
             continue
         train_src_texts += user_src_texts[user]
         train_trg_texts += user_trg_texts[user]
@@ -167,11 +167,11 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
     dev_src_texts = words_to_indices(dev_src_texts, src_vocabs, mask=mask)
     dev_trg_texts = words_to_indices(dev_trg_texts, trg_vocabs, mask=mask)
 
-    print "Num train data {}, num test data {}".format(len(train_src_texts), len(dev_src_texts))
+    print("Num train data {}, num test data {}".format(len(train_src_texts), len(dev_src_texts)))
 
     Vs = len(src_vocabs)
     Vt = len(trg_vocabs)
-    print Vs, Vt
+    print(Vs, Vt)
 
     model = build_dialogue_model(Vs=Vs, Vt=Vt, mask=mask, drop_p=drop_p, demb=emb_h, h=h, tied=tied, rnn_fn=rnn_fn)
     src_input_var, trg_input_var = model.inputs
@@ -208,10 +208,10 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
         train_loss, train_it = get_perp(train_src_texts, train_trg_texts, pred_fn, shuffle=True, prop=0.5)
         test_loss, test_it = get_perp(dev_src_texts, dev_trg_texts, pred_fn)
 
-        print "Epoch {}, train loss={:.3f}, train perp={:.3f}, test loss={:.3f}, test perp={:.3f}".format(
+        print("Epoch {}, train loss={:.3f}, train perp={:.3f}, test loss={:.3f}, test perp={:.3f}".format(
             epoch, train_loss / len(train_src_texts) / 0.5,
             np.exp(train_loss / train_it), test_loss / len(dev_src_texts),
-            np.exp(test_loss / test_it))
+            np.exp(test_loss / test_it)))
 
     if cross_domain:
         fname = 'ubuntu_dialog'

@@ -6,9 +6,9 @@ from keras import Model
 from keras.layers import Input, Embedding, CuDNNLSTM, CuDNNGRU, Dropout, Dense
 from keras.optimizers import Adam
 
-from data_loader.load_reddit import read_top_user_comments, read_test_comments
-from data_loader.load_wiki import load_wiki_by_users, load_wiki_test_data
-from helper import DenseTransposeTied, flatten_data, iterate_minibatches, words_to_indices
+from .data_loader.load_reddit import read_top_user_comments, read_test_comments
+from .data_loader.load_wiki import load_wiki_by_users, load_wiki_test_data
+from .helper import DenseTransposeTied, flatten_data, iterate_minibatches, words_to_indices
 
 MODEL_PATH = '/hdd/song/nlp/reddit/model/'
 RESULT_PATH = '/hdd/song/nlp/reddit/result/'
@@ -70,7 +70,7 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
 
     for i, user in enumerate(users):
         if loo is not None and i == loo:
-            print "Leaving {} out".format(i)
+            print("Leaving {} out".format(i))
             continue
         train_data += user_comments[user]
 
@@ -89,12 +89,12 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
     n_data = (len(train_data) - 1) // maxlen
     X_train = train_data[:-1][:n_data * maxlen].reshape(-1, maxlen)
     y_train = train_data[1:][:n_data * maxlen].reshape(-1, maxlen)
-    print X_train.shape
+    print(X_train.shape)
 
     n_test_data = (len(test_data) - 1) // maxlen
     X_test = test_data[:-1][:n_test_data * maxlen].reshape(-1, maxlen)
     y_test = test_data[1:][:n_test_data * maxlen].reshape(-1, maxlen)
-    print X_test.shape
+    print(X_test.shape)
 
     model = build_lm_model(emb_h=emb_h, h=h, nh=nh, drop_p=drop_p, V=len(vocabs), tied=tied, maxlen=maxlen,
                            rnn_fn=rnn_fn)

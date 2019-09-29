@@ -8,11 +8,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score, accuracy_score, classification_report
 from sklearn.preprocessing import StandardScaler
 
-from dialogue import build_dialogue_model, words_to_indices, MODEL_PATH, OUTPUT_PATH
-from helper import flatten_data
-from data_loader.load_cornell_movie import load_extracted_cornell_movie, process_texts, process_vocabs, \
+from .dialogue import build_dialogue_model, words_to_indices, MODEL_PATH, OUTPUT_PATH
+from .helper import flatten_data
+from .data_loader.load_cornell_movie import load_extracted_cornell_movie, process_texts, process_vocabs, \
     load_cornell_movie_by_user, load_extracted_ubuntu
-from sated_nmt_ranks import save_users_rank_results
+from .sated_nmt_ranks import save_users_rank_results
 
 
 def load_cross_domain_shadow_user_data(train_users, num_users=100, num_words=5000, num_data_per_user=200):
@@ -71,7 +71,7 @@ def load_shadow_user_data(train_users, num_users=100, num_words=10000, min_count
 
     user_counter = Counter(src_users)
     all_users = np.asarray([tup[0] for tup in user_counter.most_common() if tup[1] >= min_count])
-    print 'Loaded {} users'.format(len(all_users))
+    print('Loaded {} users'.format(len(all_users)))
 
     np.random.seed(12345)
     np.random.shuffle(all_users)
@@ -149,7 +149,7 @@ def get_shadow_ranks(exp_id=0, num_users=200, num_words=5000, mask=False, cross_
     shadow_user_path = 'shadow_users{}_{}_{}_{}.npz'.format(exp_id, rnn_fn, num_users, 'cd' if cross_domain else '')
     shadow_train_users = np.load(MODEL_PATH + shadow_user_path)['arr_0']
     shadow_train_users = list(shadow_train_users)
-    print shadow_user_path, shadow_train_users
+    print(shadow_user_path, shadow_train_users)
 
     save_dir = OUTPUT_PATH + 'shadow_exp{}_{}/'.format(exp_id, num_users)
     if not os.path.exists(save_dir):

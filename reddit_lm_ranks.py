@@ -7,10 +7,10 @@ import keras.backend as K
 import numpy as np
 from nltk.tokenize import word_tokenize
 
-from data_loader.load_reddit import read_top_users, REDDIT_PROCESSED_PATH, build_vocab, read_top_user_comments, \
+from .data_loader.load_reddit import read_top_users, REDDIT_PROCESSED_PATH, build_vocab, read_top_user_comments, \
     remove_puncs
-from data_loader.load_wiki import WIKI_TRAIN_PATH, load_wiki_lines
-from reddit_lm import words_to_indices, MODEL_PATH, RESULT_PATH, build_lm_model
+from .data_loader.load_wiki import WIKI_TRAIN_PATH, load_wiki_lines
+from .reddit_lm import words_to_indices, MODEL_PATH, RESULT_PATH, build_lm_model
 
 
 def load_cross_domain_shadow_user_data(train_users, num_users=100, num_data_per_user=100, num_words=5000):
@@ -18,12 +18,12 @@ def load_cross_domain_shadow_user_data(train_users, num_users=100, num_data_per_
 
     # l = len(train_data)
     # num_data_per_user = l // (num_users * 2)
-    print "Splitting data to {} users, each has {} texts".format(num_users * 2, num_data_per_user)
+    print("Splitting data to {} users, each has {} texts".format(num_users * 2, num_data_per_user))
 
     all_users = np.arange(num_users * 2)
     train_users = [int(u) for u in train_users]
     test_users = np.setdiff1d(all_users, train_users)
-    print len(test_users)
+    print(len(test_users))
 
     train_user_comments = defaultdict(list)
     test_user_comments = defaultdict(list)
@@ -132,7 +132,7 @@ def group_texts_by_len(texts, bs=20):
             continue
         buckets[len(t)].append(t)
 
-    for l, bucket in buckets.items():
+    for l, bucket in list(buckets.items()):
         num_batches = int(np.ceil(len(bucket) * 1.0 / bs))
         for i in range(num_batches):
             cur_batch_size = bs if i < num_batches - 1 else len(bucket) - bs * i
@@ -272,8 +272,8 @@ def get_shadow_ranks(exp_id=0, num_users=100, num_words=5000, cross_domain=False
     shadow_train_users = np.load(MODEL_PATH + shadow_user_path)['arr_0']
     shadow_train_users = list(shadow_train_users)
 
-    print len(shadow_train_users)
-    print shadow_user_path
+    print(len(shadow_train_users))
+    print(shadow_user_path)
 
     save_dir = RESULT_PATH + 'shadow_exp{}_{}/'.format(exp_id, num_users)
     if not os.path.exists(save_dir):
@@ -345,7 +345,7 @@ def read_translated_comments(users, vocabs, multi_step=False, trans='yandex'):
                 data = remove_puncs(data)
 
                 if len(data) == 1:
-                    print user, data
+                    print(user, data)
                     continue
 
                 user_comments[user].append(data + ['<eos>'])
