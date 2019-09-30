@@ -58,13 +58,15 @@ def remove_puncs(words):
 
 
 def write_processed_comments():
+    # Each user is a file
     for user in os.listdir(REDDIT_USER_PATH):
         filename = os.path.join(REDDIT_USER_PATH, user)
         cnt = 0
         new_lines = []
         with codecs.open(filename, encoding='utf-8') as f:
             for line in f:
-                text = line[1:-2].decode('unicode_escape').lower()
+                text = line[1:-2]
+                # text = line[1:-2].decode('unicode_escape').lower()
                 text = translate(text)
                 text = preprocess(text)
                 words = word_tokenize(text)
