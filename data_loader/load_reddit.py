@@ -5,8 +5,8 @@ import numpy as np
 from collections import defaultdict, Counter
 from nltk.tokenize import word_tokenize
 
-
-REDDIT_PATH = '/hdd/song/nlp/reddit/'
+REDDIT_PATH = '/data/reddit/'
+# REDDIT_PATH = '/hdd/song/nlp/reddit/'
 REDDIT_USER_PATH = REDDIT_PATH + 'shard_by_author/'
 REDDIT_PROCESSED_PATH = REDDIT_PATH + 'shard_by_author_processed/'
 REDDIT_USER_COUNT_PATH = REDDIT_PATH + 'author_count'
