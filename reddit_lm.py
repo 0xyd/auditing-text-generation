@@ -10,8 +10,12 @@ from data_loader.load_reddit import read_top_user_comments, read_test_comments
 from data_loader.load_wiki import load_wiki_by_users, load_wiki_test_data
 from helper import DenseTransposeTied, flatten_data, iterate_minibatches, words_to_indices
 
-MODEL_PATH = '/hdd/song/nlp/reddit/model/'
-RESULT_PATH = '/hdd/song/nlp/reddit/result/'
+
+MODEL_PATH = '/data/reddit/model/'
+RESULT_PATH = '/data/reddit/result/'
+
+# MODEL_PATH = '/hdd/song/nlp/reddit/model/'
+# RESULT_PATH = '/hdd/song/nlp/reddit/result/'
 
 
 def process_test_data(data, vocabs):
