@@ -258,7 +258,8 @@ def read_ptb_file(filename):
     data = []
     with open(filename, "r") as f:
         for line in f:
-            data.append(line.decode('utf-8').replace('\n', '<eos>').split())
+            data.append(line.replace('\n', '<eos>').split())
+            # data.append(line.decode('utf-8').replace('\n', '<eos>').split())
     return data
 
 
