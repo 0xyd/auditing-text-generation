@@ -79,7 +79,8 @@ def write_processed_comments():
                 new_lines.append(new_line)
         print(user, cnt)
 
-        with open(REDDIT_PROCESSED_PATH + user, 'wb') as f:
+        with open(REDDIT_PROCESSED_PATH + user, 'w') as f:
+        # with open(REDDIT_PROCESSED_PATH + user, 'wb') as f:
             for line in new_lines:
                 f.write(line + '\n')
                 # f.write(line.encode('utf8') + '\n')
