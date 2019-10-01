@@ -81,7 +81,8 @@ def write_processed_comments():
 
         with open(REDDIT_PROCESSED_PATH + user, 'wb') as f:
             for line in new_lines:
-                f.write(line.encode('utf8') + '\n')
+                f.write(line + '\n')
+                # f.write(line.encode('utf8') + '\n')
         # quit()
 
 
