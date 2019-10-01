@@ -238,7 +238,8 @@ def read_test_comments():
     test_comments = []
     with codecs.open(REDDIT_TEST_PATH, encoding='utf-8') as f:
         for line in f:
-            text = line[1:-2].decode('unicode_escape').lower()
+            text = line[1:-2]
+            # text = line[1:-2].decode('unicode_escape').lower()
             text = translate(text)
             text = preprocess(text)
             text = text.replace('/url/', '').replace('\n', '')
