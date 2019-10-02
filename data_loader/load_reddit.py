@@ -62,7 +62,10 @@ def write_processed_comments():
     for user in os.listdir(REDDIT_USER_PATH):
         filename = os.path.join(REDDIT_USER_PATH, user)
         cnt = 0
-        new_lines = []
+        # new_lines = []
+
+        user_file = open(REDDIT_PROCESSED_PATH + user, 'w')
+
         with codecs.open(filename, encoding='utf-8') as f:
             for line in f:
                 text = line[1:-2]
@@ -75,14 +78,18 @@ def write_processed_comments():
                     continue
                 cnt += 1
                 new_line = ' '.join(words)
-                # print new_line
-                new_lines.append(new_line)
-        print(user, cnt)
+                user_file.write(new_line + '\n')
 
-        with open(REDDIT_PROCESSED_PATH + user, 'w') as f:
+                # print new_line
+                # new_lines.append(new_line)
+                
+        print(user, cnt)
+        user_file.close()
+
+        # with open(REDDIT_PROCESSED_PATH + user, 'w') as f:
         # with open(REDDIT_PROCESSED_PATH + user, 'wb') as f:
-            for line in new_lines:
-                f.write(line + '\n')
+            # for line in new_lines:
+            #     f.write(line + '\n')
                 # f.write(line.encode('utf8') + '\n')
         # quit()
 
