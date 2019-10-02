@@ -8,6 +8,7 @@ from nltk.tokenize import word_tokenize
 REDDIT_PATH = './data/reddit/'
 # REDDIT_PATH = '/hdd/song/nlp/reddit/'
 REDDIT_USER_PATH = REDDIT_PATH + 'shard_by_author/'
+REDDIT_USER_PROCESSED = REDDIT_USER_PATH + 'processed/'
 REDDIT_PROCESSED_PATH = REDDIT_PATH + 'shard_by_author_processed/'
 REDDIT_USER_COUNT_PATH = REDDIT_PATH + 'author_count'
 REDDIT_TEST_PATH = REDDIT_PATH + 'test_data.json'
@@ -57,7 +58,7 @@ def remove_puncs(words):
     return new_words
 
 
-def write_processed_comments(nb=True):
+def write_processed_comments(batch_size=1000000, nb=True):
 # def write_processed_comments():
 
     if nb:
@@ -66,7 +67,7 @@ def write_processed_comments(nb=True):
         from tqdm import tqdm as tqdm
 
     # Each user is a file
-    for user in tqdm(os.listdir(REDDIT_USER_PATH)):
+    for user in tqdm(os.listdir(REDDIT_USER_PATH)[:batch_size]):
     # for user in os.listdir(REDDIT_USER_PATH):
         filename = os.path.join(REDDIT_USER_PATH, user)
         cnt = 0
@@ -93,7 +94,8 @@ def write_processed_comments(nb=True):
 
         # print(user, cnt)
         user_file.close()
-
+        os.rename(
+            REDDIT_PROCESSED_PATH + user, REDDIT_USER_PROCESSED + user)
         # with open(REDDIT_PROCESSED_PATH + user, 'w') as f:
         # with open(REDDIT_PROCESSED_PATH + user, 'wb') as f:
             # for line in new_lines:
