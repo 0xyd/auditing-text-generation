@@ -57,9 +57,17 @@ def remove_puncs(words):
     return new_words
 
 
-def write_processed_comments():
+def write_processed_comments(nb=True):
+# def write_processed_comments():
+
+    if nb:
+        from tqdm import tqdm_notebook as tqdm
+    else:
+        from tqdm import tqdm as tqdm
+
     # Each user is a file
-    for user in os.listdir(REDDIT_USER_PATH):
+    for user in tqdm(os.listdir(REDDIT_USER_PATH)):
+    # for user in os.listdir(REDDIT_USER_PATH):
         filename = os.path.join(REDDIT_USER_PATH, user)
         cnt = 0
         # new_lines = []
@@ -82,8 +90,8 @@ def write_processed_comments():
 
                 # print new_line
                 # new_lines.append(new_line)
-                
-        print(user, cnt)
+
+        # print(user, cnt)
         user_file.close()
 
         # with open(REDDIT_PROCESSED_PATH + user, 'w') as f:
