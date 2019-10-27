@@ -26,7 +26,7 @@ def load_users(p=SATED_TRAIN_USER):
     users = []
     with open(p, 'rb') as f:
         for line in f:
-            users.append(line.decode('ascii').replace('\n', ''))
+            users.append(line.decode('ascii', errors='ignore').replace('\n', ''))
     return users
 
 
@@ -196,7 +196,7 @@ def read_europarl_file(filename, num_lines=80000):
     texts = []
     with open(filename, 'rb') as f:
         for line in f:
-            arr = ['<sos>'] + line.decode('ascii').lower().replace('\n', '').split(' ') + ['<eos>']
+            arr = ['<sos>'] + line.decode('ascii', errors='ignore').lower().replace('\n', '').split(' ') + ['<eos>']
             texts.append(arr)
             if len(texts) > num_lines:
                 break
