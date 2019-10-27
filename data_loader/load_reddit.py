@@ -201,7 +201,7 @@ def build_test_data(top_users):
 
         author_count = open(REDDIT_USER_COUNT_PATH, encoding='utf-8')
 
-        for author in author_count.read():
+        for author in author_count:
             
             if author in top_users_set:
                 continue
