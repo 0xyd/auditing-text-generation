@@ -10,8 +10,11 @@ from keras.regularizers import l2
 from data_loader.load_sated import load_europarl_by_user, load_sated_data_by_user
 from helper import DenseTransposeTied, Attention
 
-MODEL_PATH = '/hdd/song/nlp/sated-release-0.9.0/model/'
-OUTPUT_PATH = '/hdd/song/nlp/sated-release-0.9.0/output/'
+MODEL_PATH = './data/sated/model/'
+OUTPUT_PATH = './data/sated/output/'
+
+# MODEL_PATH = '/hdd/song/nlp/sated-release-0.9.0/model/'
+# OUTPUT_PATH = '/hdd/song/nlp/sated-release-0.9.0/output/'
 
 
 def group_texts_by_len(src_texts, trg_texts, bs=20):
