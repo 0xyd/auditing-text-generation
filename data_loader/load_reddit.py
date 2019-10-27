@@ -105,6 +105,9 @@ def write_processed_comments(batch_size=1000000, nb=True):
 
 
 def read_top_users(num_users=100, random=True, min_count=200):
+    '''
+    "random = True" makes this function not selecting the top users ...
+    '''
     users = []
     cnts = []
     with codecs.open(REDDIT_USER_COUNT_PATH, encoding='utf-8') as f:
@@ -188,6 +191,30 @@ def read_comments_by_user(user, vocabs, max_token=1600):
     return user_comments
 
 
+# Since no test_data.json, we have to define by ourselves.
+def build_test_data(top_users):
+
+    test_data_number = int(len(top_users)*.25)
+    top_users_set = set(top_users)
+
+    with open(REDDIT_TEST_PATH, 'w') as f:
+
+        author_count = open(REDDIT_USER_COUNT_PATH, encoding='utf-8')
+
+        for author in author_count.read():
+            
+            if author in top_users_set:
+                continue
+            elif test_data_number == 0:
+                break
+            else:
+                filename = os.path.join(REDDIT_USER_PATH, user)
+                author_file = open(filename)
+                for line in author_file:
+                    f.write(line + '\n')
+                author_file.close()
+                test_data_number -= 1
+
 def read_top_user_comments(num_users=200, num_words=5000, max_token=None, vocabs=None, top_users=None,
                            sample_user=False, load_raw=False):
     if sample_user and top_users is None:
@@ -199,6 +226,8 @@ def read_top_user_comments(num_users=200, num_words=5000, max_token=None, vocabs
         print(len(top_users))
     elif top_users is None:
         top_users = read_top_users(num_users)
+        # Build test_data.json on the fly for target model
+        build_test_data(top_users) 
 
     user_comments = defaultdict(list)
     user_num_tokens = Counter()
@@ -257,7 +286,7 @@ def read_test_comments():
     test_comments = []
     with codecs.open(REDDIT_TEST_PATH, encoding='utf-8') as f:
         for line in f:
-            text = line[1:-2]
+            text = line[1:-2].lower()
             # text = line[1:-2].decode('unicode_escape').lower()
             text = translate(text)
             text = preprocess(text)
