@@ -34,7 +34,7 @@ def load_texts(p=SATED_TRAIN_ENG):
     texts = []
     with open(p, 'rb') as f:
         for line in f:
-            arr = ['<sos>'] + line.decode('ascii').replace('\n', '').split(' ') + ['<eos>']
+            arr = ['<sos>'] + line.decode('ascii', error='ignore').replace('\n', '').split(' ') + ['<eos>']
             words = []
             for w in arr:
                 words.append(w)
