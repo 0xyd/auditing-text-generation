@@ -2,7 +2,7 @@ import numpy as np
 from collections import Counter, defaultdict
 from itertools import chain
 
-SATED_PATH = './data/sated/'
+SATED_PATH = './data/sated/en-fr'
 # SATED_PATH = '/hdd/song/nlp/sated-release-0.9.0/en-fr/'
 SATED_TRAIN_ENG = SATED_PATH + 'train.en'
 SATED_TRAIN_FR = SATED_PATH + 'train.fr'
