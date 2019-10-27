@@ -77,7 +77,7 @@ def write_processed_comments(batch_size=1000000, nb=True):
 
         with codecs.open(filename, encoding='utf-8') as f:
             for line in f:
-                text = line[1:-2]
+                text = line[1:-2].lower()
                 # text = line[1:-2].decode('unicode_escape').lower()
                 text = translate(text)
                 text = preprocess(text)
