@@ -3,7 +3,8 @@ from collections import defaultdict
 import numpy as np
 
 
-WIKI_PATH_DIR = '/hdd/song/nlp/wikitext-103/'
+WIKI_PATH_DIR = './data/wikitext-103/'
+# WIKI_PATH_DIR = '/hdd/song/nlp/wikitext-103/'
 WIKI_TRAIN_PATH = WIKI_PATH_DIR + 'wiki.train.tokens'
 WIKI_DEV_PATH = WIKI_PATH_DIR + 'wiki.valid.tokens'
 WIKI_TEST_PATH = WIKI_PATH_DIR + 'wiki.test.tokens'
