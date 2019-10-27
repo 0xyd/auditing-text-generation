@@ -211,7 +211,7 @@ def build_test_data(top_users):
                 filename = os.path.join(REDDIT_USER_PATH, author)
                 author_file = open(filename)
                 for line in author_file:
-                    f.write(line + '\n')
+                    f.write(line )
                 author_file.close()
                 test_data_number -= 1
 
