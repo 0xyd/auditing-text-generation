@@ -12,9 +12,9 @@ WIKI_TEST_PATH = WIKI_PATH_DIR + 'wiki.test.tokens'
 
 def load_wiki_lines(filename=WIKI_TRAIN_PATH, num_lines=100):
     data = []
-    with open(filename, "r") as f:
+    with open(filename, "rb") as f:
         for line in f:
-            line = line.replace('\n', '').lower().lstrip().rstrip()
+            line = str(line).replace('\n', '').lower().lstrip().rstrip()
             if not line:
                 continue
             arr = line.split(' ')
