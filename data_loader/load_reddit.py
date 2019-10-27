@@ -208,7 +208,7 @@ def build_test_data(top_users):
             elif test_data_number == 0:
                 break
             else:
-                filename = os.path.join(REDDIT_USER_PATH, user)
+                filename = os.path.join(REDDIT_USER_PATH, author)
                 author_file = open(filename)
                 for line in author_file:
                     f.write(line + '\n')
