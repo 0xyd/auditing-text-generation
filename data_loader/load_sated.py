@@ -2,8 +2,8 @@ import numpy as np
 from collections import Counter, defaultdict
 from itertools import chain
 
-
-SATED_PATH = '/hdd/song/nlp/sated-release-0.9.0/en-fr/'
+SATED_PATH = './data/sated/'
+# SATED_PATH = '/hdd/song/nlp/sated-release-0.9.0/en-fr/'
 SATED_TRAIN_ENG = SATED_PATH + 'train.en'
 SATED_TRAIN_FR = SATED_PATH + 'train.fr'
 SATED_TRAIN_USER = SATED_PATH + 'train.usr'
@@ -13,7 +13,9 @@ SATED_DEV_USER = SATED_PATH + 'dev.usr'
 SATED_TEST_ENG = SATED_PATH + 'test.en'
 SATED_TEST_FR = SATED_PATH + 'test.fr'
 SATED_TEST_USER = SATED_PATH + 'test.usr'
-EUROPARL_PATH = '/hdd/song/nlp/europarl/'
+
+EUROPARL_PATH = './data/europarl/'
+# EUROPARL_PATH = '/hdd/song/nlp/europarl/'
 EUROPARL_DEEN_DE = EUROPARL_PATH + 'europarl.de-en.de.aligned.tok'
 EUROPARL_DEEN_EN = EUROPARL_PATH + 'europarl.de-en.en.aligned.tok'
 EUROPARL_FREN_FR = EUROPARL_PATH + 'europarl.fr-en.fr.aligned.tok'
