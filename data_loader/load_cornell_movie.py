@@ -326,7 +326,8 @@ def save_extracted_ubuntu():
 
 	print(len(src_texts), len(trg_texts))
 
-	with open(UBUNTU_PATH + 'extracted_src_trg.txt', 'wb') as f:
+	with open(UBUNTU_PATH + 'extracted_src_trg.txt', 'w') as f:
+	# with open(UBUNTU_PATH + 'extracted_src_trg.txt', 'wb') as f:
 		for st, tt in zip(src_texts, trg_texts):
 			f.write(SEPARATOR.join([st, tt]) + '\n')
 			# f.write(SEPARATOR.join([st, tt]).encode('utf-8') + '\n')
@@ -335,8 +336,8 @@ def save_extracted_ubuntu():
 def load_extracted_ubuntu(num_lines):
 	src_texts = []
 	trg_texts = []
-
-	with open(UBUNTU_PATH + 'extracted_src_trg.txt', 'rb') as f:
+	with open(UBUNTU_PATH + 'extracted_src_trg.txt', 'r') as f:
+	# with open(UBUNTU_PATH + 'extracted_src_trg.txt', 'rb') as f:
 		for line in f:
 			st, tt = line.lower().replace('\n', '').split(SEPARATOR)
 			st = ['<sos>'] + st.split('\t') + ['<eos>']
