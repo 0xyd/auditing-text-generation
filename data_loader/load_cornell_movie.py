@@ -9,7 +9,8 @@ from itertools import chain
 from .load_sated import process_vocabs, process_texts
 
 
-DATA_PATH = '/hdd/song/nlp/cornell_movie_dialogs_corpus/'
+DATA_PATH = './data/cornell_movie_dialogs_corpus/'
+# DATA_PATH = '/hdd/song/nlp/cornell_movie_dialogs_corpus/'
 MOVIE_LINES_PATH = DATA_PATH + 'movie_lines.txt'
 MOVIE_CONVERSATIONS_PATH = DATA_PATH + 'movie_conversations.txt'
 SEPARATOR = ' +++$+++ '
@@ -261,7 +262,8 @@ def load_cornell_movie_by_user(num_users=100, num_words=5000, test_on_user=False
                src_vocabs, trg_vocabs
 
 
-UBUNTU_PATH = '/hdd/song/nlp/ubuntu/'
+UBUNTU_PATH = './data/ubuntu/'
+# UBUNTU_PATH = '/hdd/song/nlp/ubuntu/'
 
 
 def load_ubuntu_lines(filename):

@@ -13,8 +13,11 @@ from sated_nmt import beam_search, bleu_score
 import pprint
 import numpy as np
 
-MODEL_PATH = '/hdd/song/nlp/cornell_movie_dialogs_corpus/model/'
-OUTPUT_PATH = '/hdd/song/nlp/cornell_movie_dialogs_corpus/output/'
+MODEL_PATH = './data/cornell_movie_dialogs_corpus/model/'
+OUTPUT_PATH = './data/cornell_movie_dialogs_corpus/output/'
+
+# MODEL_PATH = '/hdd/song/nlp/cornell_movie_dialogs_corpus/model/'
+# OUTPUT_PATH = '/hdd/song/nlp/cornell_movie_dialogs_corpus/output/'
 
 
 def group_texts_by_len(src_texts, trg_texts, bs=20):
