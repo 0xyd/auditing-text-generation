@@ -328,7 +328,8 @@ def save_extracted_ubuntu():
 
 	with open(UBUNTU_PATH + 'extracted_src_trg.txt', 'wb') as f:
 		for st, tt in zip(src_texts, trg_texts):
-			f.write(SEPARATOR.join([st, tt]).encode('utf-8') + '\n')
+			f.write(SEPARATOR.join([st, tt]) + '\n')
+			# f.write(SEPARATOR.join([st, tt]).encode('utf-8') + '\n')
 
 
 def load_extracted_ubuntu(num_lines):
