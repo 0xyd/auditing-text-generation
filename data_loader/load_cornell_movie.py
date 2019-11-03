@@ -281,23 +281,23 @@ def load_raw_ubuntu(max_dir=15):
 	n = 0
 
 	# 20191103 LIN.Y.D.    
-	for filename in os.listdir(UBUNTU_PATH):
-		filename = os.path.join(UBUNTU_PATH, filename)
-		if filename.endswith('csv'):
-			lines = load_ubuntu_lines(filename)
-			n += len(lines)
+	# for filename in os.listdir(UBUNTU_PATH):
+	#   filename = os.path.join(UBUNTU_PATH, filename)
+	#   if filename.endswith('csv'):
+	#       lines = load_ubuntu_lines(filename)
+	#       n += len(lines)
 
-	# 20191103 LIN.Y.D. The data i download has different structure.
-	# dialogs_path = os.path.join(UBUNTU_PATH, 'dialogs')
-	# for sub in os.listdir(dialogs_path)[:max_dir]:
-		# subdir = os.path.join(dialogs_path, sub)
+	
+	dialogs_path = os.path.join(UBUNTU_PATH, 'dialogs')
+	for sub in os.listdir(dialogs_path)[:max_dir]:
+		subdir = os.path.join(dialogs_path, sub)
 
-		# for filename in os.listdir(subdir):
-		#     filename = os.path.join(subdir, filename)
-		#     if filename.endswith('tsv'):
-		#         lines = load_ubuntu_lines(filename)
-		#         conversations.append(lines)
-		#         n += len(lines)
+		for filename in os.listdir(subdir):
+			filename = os.path.join(subdir, filename)
+			if filename.endswith('tsv'):
+				lines = load_ubuntu_lines(filename)
+				conversations.append(lines)
+				n += len(lines)
 	return conversations
 
 
