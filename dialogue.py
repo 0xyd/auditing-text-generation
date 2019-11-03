@@ -8,7 +8,7 @@ import copy
 
 from collections import defaultdict
 from .data_loader.load_cornell_movie import load_ubuntu_by_user, load_cornell_movie_by_user
-from .sated_nmt import beam_search, bleu_score
+# from .sated_nmt import beam_search, bleu_score
 
 import pprint
 import numpy as np
