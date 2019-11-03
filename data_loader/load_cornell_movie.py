@@ -306,7 +306,8 @@ def preprocess(t):
 	for i in range(len(words)):
 		if 'http' in words[i] or 'www' in words[i]:
 			words[i] = '/url/'
-	return ' '.join(words).decode("utf8")
+	return ' '.join(words)
+	# return ' '.join(words).decode("utf8")
 
 
 def save_extracted_ubuntu():
