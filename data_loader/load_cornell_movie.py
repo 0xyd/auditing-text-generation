@@ -281,7 +281,7 @@ def load_raw_ubuntu(max_dir=15):
 
 	# 20191103 LIN.Y.D.    
 	for filename in os.listdir(UBUNTU_PATH):
-		filename = os.path.join(subdir, filename)
+		filename = os.path.join(UBUNTU_PATH, filename)
 		if filename.endswith('csv'):
 			lines = load_ubuntu_lines(filename)
 			n += len(lines)
