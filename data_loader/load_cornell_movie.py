@@ -268,7 +268,8 @@ UBUNTU_PATH = './data/ubuntu/'
 
 def load_ubuntu_lines(filename):
 	lines = []
-	with open(filename, 'rb') as f:
+	with open(filename, 'r') as f:
+	# with open(filename, 'rb') as f:
 		for line in f:
 			l = line[line.rindex("\t") + 1:].strip()  # Strip metadata (timestamps, speaker names)
 			lines.append(l.lower())
