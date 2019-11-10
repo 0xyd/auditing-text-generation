@@ -269,8 +269,9 @@ def get_target_ranks(num_users=200, num_words=5000, mask=False, h=128, emb_h=128
     user_src_texts, user_trg_texts, test_user_src_texts, test_user_trg_texts, src_vocabs, trg_vocabs \
         = load_sated_data_by_user(num_users, num_words, test_on_user=True, user_data_ratio=user_data_ratio)
 
-    train_users = sorted(user_src_texts.keys())
-    test_users = sorted(test_user_src_texts.keys())
+    # 20191110 LIN, Y.D. To prevent users whose names are numbers cause sort error.
+    train_users = sorted(user_src_texts.keys(), key=str)
+    test_users = sorted(test_user_src_texts.keys(), key=str)
 
     save_dir = OUTPUT_PATH + 'target_{}{}/'.format(num_users, '_dr' if 0. < user_data_ratio < 1. else '')
     if not os.path.exists(save_dir):
