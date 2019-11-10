@@ -117,7 +117,10 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
     optimizer = Adam(lr=lr, clipnorm=5)
 
     updates = optimizer.get_updates(loss, model.trainable_weights)
-    train_fn = K.function([input_var, target_var, K.learning_phase()], [loss], updates=updates)
+
+    # 20191110 LIN, Y.D. Modify for train accuracy.
+    train_fn = K.function([input_var, target_var, K.learning_phase()], [prediction, loss], updates=updates)
+    # train_fn = K.function([input_var, target_var, K.learning_phase()], [loss], updates=updates)
 
     pred_fn = K.function([input_var, target_var,  K.learning_phase()], [prediction, loss])
 
@@ -129,7 +132,10 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
 
         for batch in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
             inputs, targets = batch
-            err = train_fn([inputs, targets, 1])[0]
+
+            # 20191110 LIN, Y.D. Modify for train accuracy.
+            preds, err = train_fn([inputs, targets, 1])
+            # err = train_fn([inputs, targets, 1])[0]
             train_batches += 1
             train_loss += err
             train_iters += maxlen
@@ -141,6 +147,11 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
                 test_iters = 0.
                 test_loss = 0.
                 test_batches = 0.
+
+                # 20191110 LIN, Y.D. Modify for train accuracy.
+                preds = preds.argmax(axis=-1)
+                train_acc += np.sum(preds.flatten() == targets.flatten())
+                train_n += len(targets.flatten())
 
                 for batch in iterate_minibatches(X_test, y_test, batch_size, shuffle=False):
                     inputs, targets = batch
@@ -154,11 +165,12 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
                     test_acc += np.sum(preds.flatten() == targets.flatten())
                     test_n += len(targets.flatten())
 
-                sys.stderr.write("Epoch {}, iteration {}, train loss={:.3f}, train perp={:.3f}, "
+                sys.stderr.write("Epoch {}, iteration {}, train loss={:.3f}, train perp={:.3f}, train acc={:.3f}, "
                                  "test loss={:.3f}, test perp={:.3f}, "
                                  "test acc={:.3f}%\n".format(epoch, iteration,
                                                              train_loss / train_batches,
                                                              np.exp(train_loss / train_iters),
+                                                             train_acc / train_n * 100, # 20191110 LIN, Y.D. Modify for train accuracy.
                                                              test_loss / test_batches,
                                                              np.exp(test_loss / test_iters),
                                                              test_acc / test_n * 100))
