@@ -150,6 +150,7 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
 
                 # 20191110 LIN, Y.D. Modify for train accuracy.
                 train_acc = 0.
+                train_n = 0.
                 preds = preds.argmax(axis=-1)
                 train_acc += np.sum(preds.flatten() == targets.flatten())
                 train_n += len(targets.flatten())
