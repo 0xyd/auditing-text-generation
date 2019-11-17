@@ -8,11 +8,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score, accuracy_score, classification_report
 from sklearn.preprocessing import StandardScaler
 
-from dialogue import build_dialogue_model, words_to_indices, MODEL_PATH, OUTPUT_PATH
-from helper import flatten_data
-from data_loader.load_cornell_movie import load_extracted_cornell_movie, process_texts, process_vocabs, \
+from .dialogue import build_dialogue_model, words_to_indices, MODEL_PATH, OUTPUT_PATH
+from .helper import flatten_data
+from .data_loader.load_cornell_movie import load_extracted_cornell_movie, process_texts, process_vocabs, \
     load_cornell_movie_by_user, load_extracted_ubuntu
-from sated_nmt_ranks import save_users_rank_results
+from .sated_nmt_ranks import save_users_rank_results
 
 
 def load_cross_domain_shadow_user_data(train_users, num_users=100, num_words=5000, num_data_per_user=200):
