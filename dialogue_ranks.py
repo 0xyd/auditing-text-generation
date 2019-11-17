@@ -234,7 +234,7 @@ def get_target_ranks(num_users=200, num_words=5000, mask=False, user_data_ratio=
             user_trg_texts[u] += heldout_trg_texts[u]
 
     model = build_dialogue_model(Vs=num_words, Vt=num_words, mask=mask, drop_p=0.)
-    model.load_weights(MODEL_PATH + '{}_{}.h5'.format(model_path, num_users))
+    model.load_weights(MODEL_PATH + '{}0_{}.h5'.format(model_path, num_users))
 
     src_input_var, trg_input_var = model.inputs
     prediction = model.output
