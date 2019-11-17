@@ -5,9 +5,9 @@ from sklearn.preprocessing import StandardScaler, Normalizer
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score, precision_recall_fscore_support
 from sklearn.svm import LinearSVC
 
-from sated_nmt import OUTPUT_PATH as SATED_OUTPUT_PATH
-from reddit_lm import RESULT_PATH as REDDIT_OUTPUT_PATH
-from dialogue import OUTPUT_PATH as CORNELL_OUTPUT_PATH
+from .sated_nmt import OUTPUT_PATH as SATED_OUTPUT_PATH
+from .reddit_lm import RESULT_PATH as REDDIT_OUTPUT_PATH
+from .dialogue import OUTPUT_PATH as CORNELL_OUTPUT_PATH
 
 
 def histogram_feats(ranks, bins=100, top_words=5000, num_words=5000, relative=False):
