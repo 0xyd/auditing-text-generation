@@ -241,7 +241,7 @@ def get_shadow_ranks(exp_id=0, num_users=200, num_words=5000, mask=False, h=128,
             = load_shadow_user_data(shadow_train_users, num_users, num_words)
     shadow_test_users = sorted(test_user_src_texts.keys())
 
-    model_path = '{}_shadow_exp{}_{}_{}.h5'.format('europal_nmt' if cross_domain else 'sated_nmt',
+    model_path = '{}_shadow_exp{}_{}_{}.h5'.format('europal_nmt0' if cross_domain else 'sated_nmt',
                                                    exp_id, rnn_fn, num_users)
 
     model = build_nmt_model(Vs=num_words, Vt=num_words, mask=mask, drop_p=0., h=h, demb=emb_h, tied=tied, rnn_fn=rnn_fn)
