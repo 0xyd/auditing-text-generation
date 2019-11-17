@@ -287,7 +287,9 @@ def get_target_ranks(num_users=200, num_words=5000, mask=False, h=128, emb_h=128
             user_trg_texts[u] += heldout_trg_texts[u]
 
     model = build_nmt_model(Vs=num_words, Vt=num_words, mask=mask, drop_p=0., h=h, demb=emb_h, tied=tied)
-    model.load_weights(MODEL_PATH + '{}_{}.h5'.format(model_path, num_users))
+    # 20191110 LIN, Y.D. The function train_sated_nmt has loo which is 0 in the naming in default
+    model.load_weights(MODEL_PATH + '{}0_{}.h5'.format(model_path, num_users))
+    # model.load_weights(MODEL_PATH + '{}_{}.h5'.format(model_path, num_users))
 
     src_input_var, trg_input_var = model.inputs
     prediction = model.output
