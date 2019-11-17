@@ -213,7 +213,7 @@ def load_train_users_heldout_data(train_users, src_vocabs, trg_vocabs, user_data
     return user_src_texts, user_trg_texts
 
 
-def get_target_ranks(num_users=200, num_words=5000, mask=False, user_data_ratio=0., save_probs=False):
+def get_target_ranks(num_users=200, num_words=5000, mask=False, user_data_ratio=0., save_probs=False, rnn_fn='gru'):
     user_src_texts, user_trg_texts, test_user_src_texts, test_user_trg_texts, src_vocabs, trg_vocabs \
         = load_cornell_movie_by_user(num_users, num_words, test_on_user=True, user_data_ratio=user_data_ratio)
 
@@ -233,7 +233,7 @@ def get_target_ranks(num_users=200, num_words=5000, mask=False, user_data_ratio=
             user_src_texts[u] += heldout_src_texts[u]
             user_trg_texts[u] += heldout_trg_texts[u]
 
-    model = build_dialogue_model(Vs=num_words, Vt=num_words, mask=mask, drop_p=0.)
+    model = build_dialogue_model(Vs=num_words, Vt=num_words, mask=mask, drop_p=0., rnn_fn=rnn_fn)
     model.load_weights(MODEL_PATH + '{}0_{}.h5'.format(model_path, num_users))
 
     src_input_var, trg_input_var = model.inputs
