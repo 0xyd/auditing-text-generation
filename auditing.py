@@ -123,13 +123,25 @@ def ranks_to_feats(ranks, labels=None, prop=1.0, dim=100, num_words=5000, top_wo
                 else:
                     r.append(user_ranks[idx])
 
-        # print i, r
+        # print(i, r)
+        print_feat = False
+        if len(indices) == 0:
+            r = np.array([0])
+            print_feat = True
+        # try:
         if isinstance(r[0], int):
             print(i)
         else:
             r = np.concatenate(r)
+        # except Exception as e:
+            # print('indices:', indices)
+            # print(r)
+            #raise e
 
         feats = histogram_feats(r, bins=dim, num_words=num_words, top_words=top_words, relative=relative)
+        if print_feat:
+            print(feats)
+            print('-'*20)
         X.append(feats)
 
     return np.vstack(X)
@@ -160,6 +172,9 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
     else:
         save_dir = result_path + 'target_{}{}/'.format(num_users, '_dr' if 0. < user_data_ratio < 1. else '')
         ranks, labels, y_test = load_ranks(save_dir, num_users)
+        valid_indices = [i for i, r in enumerate(ranks) if len(r) > 0]
+        ranks = [ranks[i] for i in valid_indices]
+        y_test = np.array([y_test[i] for i in valid_indices])
         X_test = ranks_to_feats(ranks, prop=prop, dim=dim, top_words=top_words, user_data_ratio=user_data_ratio,
                                 num_words=num_words, labels=labels, rare=rare, relative=relative,
                                 heldout_ratio=heldout_ratio)
@@ -168,6 +183,9 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
         for exp_id in range(num_exp):
             save_dir = result_path + 'shadow_exp{}_{}/'.format(exp_id, num_users)
             ranks, labels, y = load_ranks(save_dir, num_users, cross_domain=cross_domain)
+            valid_indices = [i for i, r in enumerate(ranks) if len(r) > 0]
+            ranks = [ranks[i] for i in valid_indices]
+            y = np.array([y[i] for i in valid_indices])
             feats = ranks_to_feats(ranks, prop=prop, dim=dim, top_words=top_words, relative=relative,
                                    num_words=num_words, labels=labels)
             X_train.append(feats)
@@ -194,7 +212,6 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
 
     y_pred = clf.predict(X_test)
     y_score = clf.decision_function(X_test)
-
     print(classification_report(y_pred=y_pred, y_true=y_test))
 
     acc = accuracy_score(y_test, y_pred)
