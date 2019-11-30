@@ -213,12 +213,12 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
                                                                    'cd' if cross_domain else ''), users)
 
     # Dump the record here.
-    train_losses_file = open(f'./{OUTPUT_PATH}/{fname}_train_losses.pkl', 'wb')
-    train_perps_file  = open(f'./{OUTPUT_PATH}/{fname}_train_perps.pkl', 'wb')
-    train_accs_file  = open(f'./{OUTPUT_PATH}/{fname}_train_accs.pkl', 'wb')
-    test_losses_file = open(f'./{OUTPUT_PATH}/{fname}_test_losses.pkl', 'wb')
-    test_perps_file  = open(f'./{OUTPUT_PATH}/{fname}_test_perps.pkl', 'wb')
-    test_accs_file  = open(f'./{OUTPUT_PATH}/{fname}_test_accs.pkl', 'wb')
+    train_losses_file = open(f'./{RESULT_PATH}/{fname}_train_losses.pkl', 'wb')
+    train_perps_file  = open(f'./{RESULT_PATH}/{fname}_train_perps.pkl', 'wb')
+    train_accs_file  = open(f'./{RESULT_PATH}/{fname}_train_accs.pkl', 'wb')
+    test_losses_file = open(f'./{RESULT_PATH}/{fname}_test_losses.pkl', 'wb')
+    test_perps_file  = open(f'./{RESULT_PATH}/{fname}_test_perps.pkl', 'wb')
+    test_accs_file  = open(f'./{RESULT_PATH}/{fname}_test_accs.pkl', 'wb')
     pkl.dump(train_losses, train_losses_file)
     pkl.dump(train_perps, train_perps_file)
     pkl.dump(train_accs, train_accs_file)
@@ -232,7 +232,7 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
     test_perps_file.close()
     test_accs_file.close()
 
-    
+
 
     model.save(MODEL_PATH + '{}_{}.h5'.format(fname, num_users))
 
