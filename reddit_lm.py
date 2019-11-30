@@ -1,4 +1,5 @@
 import sys
+import pickle as pkl
 
 import keras.backend as K
 import numpy as np
@@ -124,6 +125,16 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
 
     pred_fn = K.function([input_var, target_var,  K.learning_phase()], [prediction, loss])
 
+
+    # 20191129 LIN,Y.D. Records lost and perplexity
+    train_losses = []
+    train_perps  = []
+    test_losses  = []
+    test_perps   = []
+    train_accs   = []
+    test_accs    = []
+
+
     iteration = 1
     for epoch in range(num_epochs):
         train_batches = 0.
@@ -167,15 +178,29 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
                     test_acc += np.sum(preds.flatten() == targets.flatten())
                     test_n += len(targets.flatten())
 
+
+                train_losses.append(train_loss / train_batches)
+                train_perps.append(np.exp(train_loss / train_iters))
+                train_accs.append(train_acc / train_n * 100)
+                test_losses.append(test_loss / test_batches)
+                test_perps.append(np.exp(test_loss / test_iters))
+                test_accs.append(test_acc / test_n * 100)
+
                 sys.stderr.write("Epoch {}, iteration {}, train loss={:.3f}, train perp={:.3f}, train acc={:.3f}, "
                                  "test loss={:.3f}, test perp={:.3f}, "
                                  "test acc={:.3f}%\n".format(epoch, iteration,
-                                                             train_loss / train_batches,
-                                                             np.exp(train_loss / train_iters),
-                                                             train_acc / train_n * 100, # 20191110 LIN, Y.D. Modify for train accuracy.
-                                                             test_loss / test_batches,
-                                                             np.exp(test_loss / test_iters),
-                                                             test_acc / test_n * 100))
+                                                             train_losses[-1], train_perps[-1], train_accs[-1], # 20191110 LIN, Y.D. Modify for train accuracy.
+                                                             test_losses[-1], test_perps[-1], test_accs[-1]))
+
+                # sys.stderr.write("Epoch {}, iteration {}, train loss={:.3f}, train perp={:.3f}, train acc={:.3f}, "
+                #                  "test loss={:.3f}, test perp={:.3f}, "
+                #                  "test acc={:.3f}%\n".format(epoch, iteration,
+                #                                              train_loss / train_batches,
+                #                                              np.exp(train_loss / train_iters),
+                #                                              train_acc / train_n * 100, # 20191110 LIN, Y.D. Modify for train accuracy.
+                #                                              test_loss / test_batches,
+                #                                              np.exp(test_loss / test_iters),
+                #                                              test_acc / test_n * 100))
 
     if cross_domain:
         fname = 'wiki_lm{}'.format('' if loo is None else loo)
@@ -186,6 +211,28 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
         fname += '_shadow_exp{}_{}'.format(exp_id, rnn_fn)
         np.savez(MODEL_PATH + 'shadow_users{}_{}_{}_{}.npz'.format(exp_id, rnn_fn, num_users,
                                                                    'cd' if cross_domain else ''), users)
+
+    # Dump the record here.
+    train_losses_file = open(f'./{OUTPUT_PATH}/{fname}_train_losses.pkl', 'wb')
+    train_perps_file  = open(f'./{OUTPUT_PATH}/{fname}_train_perps.pkl', 'wb')
+    train_accs_file  = open(f'./{OUTPUT_PATH}/{fname}_train_accs.pkl', 'wb')
+    test_losses_file = open(f'./{OUTPUT_PATH}/{fname}_test_losses.pkl', 'wb')
+    test_perps_file  = open(f'./{OUTPUT_PATH}/{fname}_test_perps.pkl', 'wb')
+    test_accs_file  = open(f'./{OUTPUT_PATH}/{fname}_test_accs.pkl', 'wb')
+    pkl.dump(train_losses, train_losses_file)
+    pkl.dump(train_perps, train_perps_file)
+    pkl.dump(train_accs, train_accs_file)
+    pkl.dump(test_losses, test_losses_file)
+    pkl.dump(test_perps, test_perps_file)
+    pkl.dump(test_accs, test_accs_file)
+    train_losses_file.close()
+    train_perps_file.close()
+    train_accs_file.close()
+    test_losses_file.close()
+    test_perps_file.close()
+    test_accs_file.close()
+
+    
 
     model.save(MODEL_PATH + '{}_{}.h5'.format(fname, num_users))
 
