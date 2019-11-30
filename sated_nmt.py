@@ -295,10 +295,10 @@ def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, 
                                                                    'cd' if cross_domain else ''), users)
 
     #20191129 LIN,Y.D. Dump the experiment results
-    train_losses_file = open(f'{fname}_train_losses.pkl', 'wb')
-    train_perps_file  = open(f'{fname}_train_perps.pkl', 'wb')
-    test_losses_file = open(f'{fname}_test_losses.pkl', 'wb')
-    test_perps_file  = open(f'{fname}_test_perps.pkl', 'wb')
+    train_losses_file = open(f'./{OUTPUT_PATH}/{fname}_train_losses.pkl', 'wb')
+    train_perps_file  = open(f'./{OUTPUT_PATH}/{fname}_train_perps.pkl', 'wb')
+    test_losses_file = open(f'./{OUTPUT_PATH}/{fname}_test_losses.pkl', 'wb')
+    test_perps_file  = open(f'./{OUTPUT_PATH}/{fname}_test_perps.pkl', 'wb')
     pkl.dump(train_losses, train_losses_file)
     pkl.dump(train_perps, train_perps_file)
     pkl.dump(test_losses, test_losses_file)
