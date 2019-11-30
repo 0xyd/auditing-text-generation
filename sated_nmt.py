@@ -269,7 +269,7 @@ def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, 
 
 
         print("Epoch {}, train loss={:.3f}, train perp={:.3f}, test loss={:.3f}, test perp={:.3f}".format(
-            epoch, train_losses[-1], train_perps[-1], test_losses, test_perps))
+            epoch, train_losses[-1], train_perps[-1], test_losses[-1], test_perps[-1]))
 
         # print("Epoch {}, train loss={:.3f}, train perp={:.3f}, test loss={:.3f}, test perp={:.3f}".format(
         #     epoch,
@@ -307,7 +307,7 @@ def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, 
     train_perps_file.close()
     test_losses_file.close()
     test_perps_file.close()
-    
+
 
     model.save(MODEL_PATH + '{}_{}.h5'.format(fname, num_users))
     K.clear_session()
