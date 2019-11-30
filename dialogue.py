@@ -1,3 +1,5 @@
+import pickle as pkl
+
 from keras import Model
 from keras.layers import Input, Embedding, LSTM, Dropout, Dense, CuDNNLSTM, CuDNNGRU
 from .helper import DenseTransposeTied
@@ -201,6 +203,13 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
         trg_input = pad_texts(trg_input, trg_vocabs['<eos>'], mask=mask)
         batches.append((src_input, trg_input))
 
+
+    # Record losses and perplexity
+    train_losses = []
+    train_perps  = []
+    test_losses  = []
+    test_perps   = []
+
     for epoch in range(num_epochs):
         np.random.shuffle(batches)
 
@@ -211,10 +220,25 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
         train_loss, train_it = get_perp(train_src_texts, train_trg_texts, pred_fn, shuffle=True, prop=0.5)
         test_loss, test_it = get_perp(dev_src_texts, dev_trg_texts, pred_fn)
 
+
+        # Recording losses and perplexity in train phrase
+        train_losses.append(train_loss / len(train_src_texts) / 0.5)
+        train_perps.append(np.exp(train_loss / train_it))
+        test_losses.append(test_loss / len(dev_src_texts))
+        test_perps.append(np.exp(test_loss / test_it))
+
+
         print("Epoch {}, train loss={:.3f}, train perp={:.3f}, test loss={:.3f}, test perp={:.3f}".format(
             epoch, train_loss / len(train_src_texts) / 0.5,
-            np.exp(train_loss / train_it), test_loss / len(dev_src_texts),
+            np.exp(train_loss / train_it), 
+            test_loss / len(dev_src_texts),
             np.exp(test_loss / test_it)))
+
+        # print("Epoch {}, train loss={:.3f}, train perp={:.3f}, test loss={:.3f}, test perp={:.3f}".format(
+        #     epoch, train_loss / len(train_src_texts) / 0.5,
+        #     np.exp(train_loss / train_it), 
+        #     test_loss / len(dev_src_texts),
+        #     np.exp(test_loss / test_it)))
 
     if cross_domain:
         fname = 'ubuntu_dialog'
@@ -231,6 +255,20 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
         fname += '_shadow_exp{}_{}'.format(exp_id, rnn_fn)
         np.savez(MODEL_PATH + 'shadow_users{}_{}_{}_{}.npz'.format(exp_id, rnn_fn, num_users,
                                                                    'cd' if cross_domain else ''), users)
+
+    
+    train_losses_file = open(f'./{OUTPUT_PATH}/{fname}_train_losses.pkl', 'wb')
+    train_perps_file  = open(f'./{OUTPUT_PATH}/{fname}_train_perps.pkl', 'wb')
+    test_losses_file = open(f'./{OUTPUT_PATH}/{fname}_test_losses.pkl', 'wb')
+    test_perps_file  = open(f'./{OUTPUT_PATH}/{fname}_test_perps.pkl', 'wb')
+    pkl.dump(train_losses, train_losses_file)
+    pkl.dump(train_perps, train_perps_file)
+    pkl.dump(test_losses, test_losses_file)
+    pkl.dump(test_perps, test_perps_file)
+    train_losses_file.close()
+    train_perps_file.close()
+    test_losses_file.close()
+    test_perps_file.close()
 
     model.save(MODEL_PATH + '{}_{}.h5'.format(fname, num_users))
 
