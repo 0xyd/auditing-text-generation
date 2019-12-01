@@ -1,8 +1,10 @@
+import pickle as pkl
 import numpy as np
 import os
 
 from sklearn.preprocessing import StandardScaler, Normalizer
 from sklearn.metrics import classification_report, accuracy_score, roc_auc_score, precision_recall_fscore_support
+from sklearn.metrics import roc_curve # For the all roc curves.
 from sklearn.svm import LinearSVC
 
 from .sated_nmt import OUTPUT_PATH as SATED_OUTPUT_PATH
@@ -212,6 +214,22 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
 
     y_pred = clf.predict(X_test)
     y_score = clf.decision_function(X_test)
+
+    # 20192101. LIN, Y.D. Store all true positives and false postives
+    tpr, fpr, thresholds = roc_curve(y_test, y_score)
+    tpr_path = os.path.join(result_path, f'audit_{data_name}_{num_users}_tpr.pkl')
+    fpr_path = os.path.join(result_path, f'audit_{data_name}_{num_users}_fpr.pkl')
+    ths_path = os.path.join(result_path, f'audit_{data_name}_{num_users}_thresholds.pkl')
+    tpr_path_file = open(tpr_path, 'wb')
+    fpr_path_file = open(fpr_path, 'wb')
+    ths_path_file = open(ths_path, 'wb')
+    pkl.dump(tpr, tpr_path_file)
+    pkl.dump(fpr, fpr_path_file)
+    pkl.dump(ths, ths_path_file)
+    tpr_path_file.close()
+    fpr_path_file.close()
+    ths_path_file.close()
+
     print(classification_report(y_pred=y_pred, y_true=y_test))
 
     acc = accuracy_score(y_test, y_pred)
@@ -221,4 +239,4 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
     rec = recs[1]
 
     print('precision={}, recall={}, acc={}, auc={}'.format(pre, rec, acc, auc))
-    return acc, auc, pre, rec
+    return acc, auc, pre, rec, tpr, fpr, thresholds
