@@ -239,4 +239,4 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
     rec = recs[1]
 
     print('precision={}, recall={}, acc={}, auc={}'.format(pre, rec, acc, auc))
-    return acc, auc, pre, rec, tpr, fpr, thresholds
+    return acc, auc, pre, rec, tpr, fpr, ths
