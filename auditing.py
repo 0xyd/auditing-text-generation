@@ -215,10 +215,8 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
     y_pred = clf.predict(X_test)
     y_score = clf.decision_function(X_test)
 
-    print('check: ', y_score)
-
     # 20192101. LIN, Y.D. Store all true positives and false postives
-    tpr, fpr, ths = roc_curve(y_test, y_score)
+    fpr, tpr, ths = roc_curve(y_test, y_score)
     tpr_path = os.path.join(result_path, f'audit_{data_name}_{num_users}_tpr.pkl')
     fpr_path = os.path.join(result_path, f'audit_{data_name}_{num_users}_fpr.pkl')
     ths_path = os.path.join(result_path, f'audit_{data_name}_{num_users}_thresholds.pkl')
