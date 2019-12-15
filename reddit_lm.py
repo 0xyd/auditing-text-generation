@@ -14,6 +14,11 @@ from .helper import DenseTransposeTied, flatten_data, iterate_minibatches, words
 # from data_loader.load_wiki import load_wiki_by_users, load_wiki_test_data
 # from helper import DenseTransposeTied, flatten_data, iterate_minibatches, words_to_indices
 
+# Add Differential Privacy
+from tensorflow_privacy.privacy.analysis.rdp_accountant import compute_rdp
+from tensorflow_privacy.privacy.analysis.rdp_accountant import get_privacy_spent
+from tensorflow_privacy.privacy.optimizers.dp_optimizer import DPAdamGuassianOptimizer
+
 
 MODEL_PATH = './data/reddit/model/'
 RESULT_PATH = './data/reddit/result/'
@@ -65,7 +70,7 @@ def build_lm_model(emb_h=128, h=128, nh=1, V=5000, maxlen=35, drop_p=0.25, tied=
 
 def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, batch_size=20, exp_id=0,
                     h=128, emb_h=256, lr=1e-3, drop_p=0.25, tied=False, nh=1, loo=None, sample_user=False,
-                    cross_domain=False, print_every=1000, rnn_fn='lstm'):
+                    cross_domain=False, print_every=1000, rnn_fn='lstm', DP=False):
     if cross_domain:
         loo = None
         sample_user = True
@@ -113,9 +118,15 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
     prediction = model(input_var)
 
     loss = K.sparse_categorical_crossentropy(target_var, prediction, from_logits=True)
-    loss = K.mean(K.sum(loss, axis=-1))
 
-    optimizer = Adam(lr=lr, clipnorm=5)
+    if DP:
+        optimizer = DPAdamGuassianOptimizer(
+            l2_norm_clip=0.15, noise_multiplier=1.1, 
+            learning_rate=lr, num_microbatches=batch_size)
+
+    else:
+        loss = K.mean(K.sum(loss, axis=-1))
+        optimizer = Adam(lr=lr, clipnorm=5)
 
     updates = optimizer.get_updates(loss, model.trainable_weights)
 
@@ -133,7 +144,6 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
     test_perps   = []
     train_accs   = []
     test_accs    = []
-
 
     iteration = 1
     for epoch in range(num_epochs):
@@ -177,7 +187,6 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
                     preds = preds.argmax(axis=-1)
                     test_acc += np.sum(preds.flatten() == targets.flatten())
                     test_n += len(targets.flatten())
-
 
                 train_losses.append(train_loss / train_batches)
                 train_perps.append(np.exp(train_loss / train_iters))
