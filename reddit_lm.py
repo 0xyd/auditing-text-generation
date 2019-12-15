@@ -17,7 +17,7 @@ from .helper import DenseTransposeTied, flatten_data, iterate_minibatches, words
 # Add Differential Privacy
 from tensorflow_privacy.privacy.analysis.rdp_accountant import compute_rdp
 from tensorflow_privacy.privacy.analysis.rdp_accountant import get_privacy_spent
-from tensorflow_privacy.privacy.optimizers.dp_optimizer import DPAdamGuassianOptimizer
+from tensorflow_privacy.privacy.optimizers.dp_optimizer import DPAdamGaussianOptimizer
 
 
 MODEL_PATH = './data/reddit/model/'
