@@ -216,6 +216,10 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
     else:
         fname = 'reddit_lm{}'.format('' if loo is None else loo)
 
+    # Add DP suffix for storing DP results.
+    if DP:
+        fname = 'dp_' + fname
+
     if sample_user:
         fname += '_shadow_exp{}_{}'.format(exp_id, rnn_fn)
         np.savez(MODEL_PATH + 'shadow_users{}_{}_{}_{}.npz'.format(exp_id, rnn_fn, num_users,
