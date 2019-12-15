@@ -120,7 +120,7 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
     loss = K.sparse_categorical_crossentropy(target_var, prediction, from_logits=True)
 
     if DP:
-        optimizer = DPAdamGuassianOptimizer(
+        optimizer = DPAdamGaussianOptimizer(
             l2_norm_clip=0.15, noise_multiplier=1.1, 
             learning_rate=lr, num_microbatches=batch_size)
 
