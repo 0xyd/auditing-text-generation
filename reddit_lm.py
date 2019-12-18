@@ -122,7 +122,7 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
 
 	if DP:
 		optimizer = DPAdamGaussianOptimizer(
-			l2_norm_clip=0.15, noise_multiplier=1.1, 
+			l2_norm_clip=l2_norm_clip, noise_multiplier=noise_multiplier, 
 			learning_rate=lr, num_microbatches=batch_size)
 		grads_and_vars = optimizer.compute_gradients(loss, model.trainable_weights)
 		updates = [optimizer.apply_gradients(grads_and_vars)]
@@ -222,7 +222,7 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
 
 	# Add DP suffix for storing DP results.
 	if DP:
-		fname = 'dp_' + fname
+		fname = '{}_dp_l2_{}_noise_{}'.format(fname, l2_norm_clip, noise_multiplier) 
 
 	if sample_user:
 		fname += '_shadow_exp{}_{}'.format(exp_id, rnn_fn)
