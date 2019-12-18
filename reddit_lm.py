@@ -123,13 +123,12 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
         optimizer = DPAdamGaussianOptimizer(
             l2_norm_clip=0.15, noise_multiplier=1.1, 
             learning_rate=lr, num_microbatches=batch_size)
-
+        grads_and_vars = optimizer.compute_gradients(loss, model.trainable_weights)
+        updates = [optimizer.apply_gradients(grads_and_vars)]
     else:
         loss = K.mean(K.sum(loss, axis=-1))
         optimizer = Adam(lr=lr, clipnorm=5)
-
-    updates = optimizer.get_updates(loss, model.trainable_weights)
-
+        updates = optimizer.get_updates(loss, model.trainable_weights)
     # 20191110 LIN, Y.D. Modify for train accuracy.
     train_fn = K.function([input_var, target_var, K.learning_phase()], [prediction, loss], updates=updates)
     # train_fn = K.function([input_var, target_var, K.learning_phase()], [loss], updates=updates)
@@ -158,8 +157,10 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
             preds, err = train_fn([inputs, targets, 1])
             # err = train_fn([inputs, targets, 1])[0]
             train_batches += 1
+            if DP:
+                err = np.sum(np.mean(err, axis=1)) 
             train_loss += err
-            train_iters += maxlen
+            train_iters += maxlen	
 
             iteration += 1
             if iteration % print_every == 0:
@@ -180,6 +181,8 @@ def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, bat
                     inputs, targets = batch
 
                     preds, err = pred_fn([inputs, targets, 0])
+                    if DP:
+                        err = np.sum(np.mean(err, axis=1))
                     test_loss += err
                     test_iters += maxlen
                     test_batches += 1
