@@ -15,6 +15,11 @@ from .data_loader.load_cornell_movie import load_ubuntu_by_user, load_cornell_mo
 import pprint
 import numpy as np
 
+# Add Differential Privacy
+from tensorflow_privacy.privacy.analysis.rdp_accountant import compute_rdp
+from tensorflow_privacy.privacy.analysis.rdp_accountant import get_privacy_spent
+from tensorflow_privacy.privacy.optimizers.dp_optimizer import DPAdamGaussianOptimizer
+
 MODEL_PATH = './data/cornell_movie_dialogs_corpus/model/'
 OUTPUT_PATH = './data/cornell_movie_dialogs_corpus/output/'
 
@@ -146,7 +151,7 @@ def pad_texts(texts, eos, mask=True):
 
 def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sample_user=False, exp_id=0, emb_h=128,
                         lr=0.001, batch_size=32, mask=False, drop_p=0.5, h=128, user_data_ratio=0., cross_domain=False,
-                        ablation=False, tied=True, rnn_fn='gru'):
+                        ablation=False, tied=True, rnn_fn='gru', DP=False, l2_norm_clip=0.15, noise_multiplier=1.1):
     if cross_domain:
         sample_user = True
         loo = None
@@ -185,11 +190,22 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
     trg_label_var = K.placeholder((None, None), dtype='float32')
 
     loss = K.sparse_categorical_crossentropy(trg_label_var, prediction, from_logits=True)
-    loss = K.mean(K.sum(loss, axis=-1))
+    
+    if DP:
+        optimizer = DPAdamGaussianOptimizer(
+            l2_norm_clip=l2_norm_clip, noise_multiplier=noise_multiplier, 
+            learning_rate=lr, num_microbatches=batch_size)
+        grads_and_vars = optimizer.compute_gradients(loss, model.trainable_weights)
+        updates = [optimizer.apply_gradients(grads_and_vars)]
+    else:
+        loss = K.mean(K.sum(loss, axis=-1))
+        optimizer = Adam(lr=lr, clipnorm=5)
+        updates = optimizer.get_updates(loss, model.trainable_weights)
+    # loss = K.mean(K.sum(loss, axis=-1))
 
-    optimizer = Adam(lr=lr)
+    # optimizer = Adam(lr=lr)
 
-    updates = optimizer.get_updates(loss, model.trainable_weights)
+    # updates = optimizer.get_updates(loss, model.trainable_weights)
     train_fn = K.function([src_input_var, trg_input_var, trg_label_var, K.learning_phase()], [loss], updates=updates)
     pred_fn = K.function([src_input_var, trg_input_var, trg_label_var, K.learning_phase()], [loss])
 
@@ -198,6 +214,8 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
     padded_train_src_texts = copy.deepcopy(train_src_texts)
     padded_train_trg_texts = copy.deepcopy(train_trg_texts)
     for batch in group_texts_by_len(padded_train_src_texts, padded_train_trg_texts, bs=batch_size):
+        if DP and len(batch) < batch_size:
+            continue
         src_input, trg_input = batch
         src_input = pad_texts(src_input, src_vocabs['<eos>'], mask=mask)
         trg_input = pad_texts(trg_input, trg_vocabs['<eos>'], mask=mask)
@@ -217,8 +235,8 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
             src_input, trg_input = batch
             _ = train_fn([src_input, trg_input[:, :-1], trg_input[:, 1:], 1])[0]
 
-        train_loss, train_it = get_perp(train_src_texts, train_trg_texts, pred_fn, shuffle=True, prop=0.5)
-        test_loss, test_it = get_perp(dev_src_texts, dev_trg_texts, pred_fn)
+        train_loss, train_it = get_perp(train_src_texts, train_trg_texts, pred_fn, shuffle=True, prop=0.5, DP=DP)
+        test_loss, test_it = get_perp(dev_src_texts, dev_trg_texts, pred_fn, DP=DP)
 
 
         # Recording losses and perplexity in train phrase
@@ -248,6 +266,9 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
     if ablation:
         fname = 'ablation_' + fname
 
+    if DP:
+        fname = '{}_dp_l2_{}_noise_{}'.format(fname, l2_norm_clip, noise_multiplier)
+
     if 0. < user_data_ratio < 1.:
         fname += '_dr{}'.format(user_data_ratio)
 
@@ -273,7 +294,7 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
     model.save(MODEL_PATH + '{}_{}.h5'.format(fname, num_users))
 
 
-def get_perp(user_src_data, user_trg_data, pred_fn, prop=1.0, shuffle=False):
+def get_perp(user_src_data, user_trg_data, pred_fn, prop=1.0, shuffle=False, DP=False):
     loss = 0.
     iters = 0.
 
@@ -290,6 +311,10 @@ def get_perp(user_src_data, user_trg_data, pred_fn, prop=1.0, shuffle=False):
         trg_label = trg_text[1:].reshape(1, -1)
 
         err = pred_fn([src_text, trg_input, trg_label, 0])[0]
+
+        # Add up all losses of all samples in each batch
+        if DP:
+            err = np.sum(np.mean(err, axis=1))
 
         loss += err
         iters += trg_label.shape[1]
