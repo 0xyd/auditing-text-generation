@@ -70,7 +70,8 @@ def build_lm_model(emb_h=128, h=128, nh=1, V=5000, maxlen=35, drop_p=0.25, tied=
 
 def train_reddit_lm(num_users=300, num_words=5000, num_epochs=30, maxlen=35, batch_size=20, exp_id=0,
 					h=128, emb_h=256, lr=1e-3, drop_p=0.25, tied=False, nh=1, loo=None, sample_user=False,
-					cross_domain=False, print_every=1000, rnn_fn='lstm', DP=False):
+					cross_domain=False, print_every=1000, rnn_fn='lstm', DP=False, 
+					l2_norm_clip=0.15, noise_multiplier=1.1):
 	if cross_domain:
 		loo = None
 		sample_user = True
