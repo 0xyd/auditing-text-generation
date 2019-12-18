@@ -235,7 +235,6 @@ def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, 
     trg_label_var = K.placeholder((None, None), dtype='float32')
 
     loss = K.sparse_categorical_crossentropy(trg_label_var, prediction, from_logits=True)
-    loss = K.mean(K.sum(loss, axis=-1))
 
     if DP:
         optimizer = DPAdamGaussianOptimizer(
