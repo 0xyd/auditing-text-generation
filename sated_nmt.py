@@ -257,6 +257,10 @@ def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, 
     train_prop = 0.2
     batches = []
     for batch in group_texts_by_len(train_src_texts, train_trg_texts, bs=batch_size):
+
+        # The DP setting forces every batch's size should be fixed.
+        if DP and len(batch) < batch_size:
+            continue
         src_input, trg_input = batch
         src_input = pad_texts(src_input, src_vocabs['<eos>'], mask=mask)
         trg_input = pad_texts(trg_input, trg_vocabs['<eos>'], mask=mask)
