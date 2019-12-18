@@ -11,6 +11,11 @@ from keras.regularizers import l2
 from .data_loader.load_sated import load_europarl_by_user, load_sated_data_by_user
 from .helper import DenseTransposeTied, Attention
 
+# Add Differential Privacy
+from tensorflow_privacy.privacy.analysis.rdp_accountant import compute_rdp
+from tensorflow_privacy.privacy.analysis.rdp_accountant import get_privacy_spent
+from tensorflow_privacy.privacy.optimizers.dp_optimizer import DPAdamGaussianOptimizer
+
 MODEL_PATH = './data/sated/model/'
 OUTPUT_PATH = './data/sated/output/'
 
@@ -161,7 +166,7 @@ def pad_texts(texts, eos, mask=True):
     return np.asarray(texts, dtype='float32')
 
 
-def get_perp(user_src_data, user_trg_data, pred_fn, prop=1.0, shuffle=False):
+def get_perp(user_src_data, user_trg_data, pred_fn, prop=1.0, shuffle=False, DP=False):
     loss = 0.
     iters = 0.
 
@@ -179,6 +184,9 @@ def get_perp(user_src_data, user_trg_data, pred_fn, prop=1.0, shuffle=False):
 
         err = pred_fn([src_text, trg_input, trg_label, 0])[0]
 
+        # Add up all losses of all samples in each batch
+        if DP:
+            err = np.sum(np.mean(err, axis=1))
         loss += err
         iters += trg_label.shape[1]
 
@@ -187,7 +195,8 @@ def get_perp(user_src_data, user_trg_data, pred_fn, prop=1.0, shuffle=False):
 
 def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, emb_h=128, l2_ratio=1e-4, exp_id=0,
                     lr=0.001, batch_size=32, mask=False, drop_p=0.5, cross_domain=False, tied=False, ablation=False,
-                    sample_user=False, user_data_ratio=0., rnn_fn='lstm'):
+                    sample_user=False, user_data_ratio=0., rnn_fn='lstm', 
+                    DP=False, l2_norm_clip=0.15, noise_multiplier=1.1):
     if cross_domain:
         sample_user = True
         user_src_texts, user_trg_texts, dev_src_texts, dev_trg_texts, test_src_texts, test_trg_texts,\
@@ -228,9 +237,20 @@ def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, 
     loss = K.sparse_categorical_crossentropy(trg_label_var, prediction, from_logits=True)
     loss = K.mean(K.sum(loss, axis=-1))
 
-    optimizer = Adam(lr=lr, clipnorm=5.)
+    if DP:
+        optimizer = DPAdamGaussianOptimizer(
+            l2_norm_clip=l2_norm_clip, noise_multiplier=noise_multiplier, 
+            learning_rate=lr, num_microbatches=batch_size)
+        grads_and_vars = optimizer.compute_gradients(loss, model.trainable_weights)
+        updates = [optimizer.apply_gradients(grads_and_vars)]
+    else:
+        loss = K.mean(K.sum(loss, axis=-1))
+        optimizer = Adam(lr=lr, clipnorm=5)
+        updates = optimizer.get_updates(loss, model.trainable_weights)
 
-    updates = optimizer.get_updates(loss, model.trainable_weights)
+    # optimizer = Adam(lr=lr, clipnorm=5.)
+
+    # updates = optimizer.get_updates(loss, model.trainable_weights)
     train_fn = K.function([src_input_var, trg_input_var, trg_label_var, K.learning_phase()], [loss], updates=updates)
     pred_fn = K.function([src_input_var, trg_input_var, trg_label_var, K.learning_phase()], [loss])
 
@@ -282,6 +302,9 @@ def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, 
         fname = 'europal_nmt{}'.format('' if loo is None else loo)
     else:
         fname = 'sated_nmt{}'.format('' if loo is None else loo)
+
+    if DP:
+        fname = '{}_dp_l2_{}_noise_{}'.format(fname, l2_norm_clip, noise_multiplier) 
 
     if ablation:
         fname = 'ablation_' + fname
