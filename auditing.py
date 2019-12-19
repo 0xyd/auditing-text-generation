@@ -66,7 +66,7 @@ def load_ranks(save_dir, num_users=5000, cross_domain=False,
             
         # save_path = save_dir + 'rank_u{}_y1{}.npz'.format(i, '_cd' if cross_domain else '')
         if os.path.exists(save_path):
-            f = np.load(save_path)
+            f = np.load(save_path, allow_pickle=True)
             train_rs, train_ls = f['arr_0'], f['arr_1']
             ranks.append(train_rs)
             labels.append(train_ls)
@@ -81,7 +81,7 @@ def load_ranks(save_dir, num_users=5000, cross_domain=False,
 
         # save_path = save_dir + 'rank_u{}_y0{}.npz'.format(i, '_cd' if cross_domain else '')
         if os.path.exists(save_path):
-            f = np.load(save_path)
+            f = np.load(save_path, allow_pickle=True)
             test_rs, test_ls = f['arr_0'], f['arr_1']
             ranks.append(test_rs)
             labels.append(test_ls)
