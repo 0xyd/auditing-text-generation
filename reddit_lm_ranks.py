@@ -307,7 +307,8 @@ def get_shadow_ranks(exp_id=0, num_users=100, num_words=5000, cross_domain=False
                             vocabs=vocabs, prob_fn=prob_fn, save_dir=save_dir, member_label=0)
 
 
-def get_target_ranks(num_users=100, num_words=5000, h=128, emb_h=256, rerun=False):
+def get_target_ranks(num_users=100, num_words=5000, h=128, emb_h=256, rerun=False,
+                     DP=False, l2_norm_clip=0.15, noise_multiplier=1.1):
     users = read_top_users(num_users * 2)
     train_users = users[:num_users]
     test_users = users[num_users:]
@@ -317,8 +318,12 @@ def get_target_ranks(num_users=100, num_words=5000, h=128, emb_h=256, rerun=Fals
     save_dir = RESULT_PATH + 'target_{}/'.format(num_users)
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
-
-    model_path = 'reddit_lm_{}.h5'.format(num_users)
+    
+    if DP:
+        model_path = 'reddit_lm_dp_l2_{}_noise_{}_{}.h5'.format(
+            l2_norm_clip, noise_multiplier, num_users)
+    else:
+        model_path = 'reddit_lm_{}.h5'.format(num_users)
     model = build_lm_model(V=num_words, drop_p=0., h=h, emb_h=emb_h)
     model.load_weights(MODEL_PATH + model_path)
 
