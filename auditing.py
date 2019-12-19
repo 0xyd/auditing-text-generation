@@ -50,12 +50,21 @@ def sample_with_ratio(a, b, heldout_ratio=0.5):
         return a + b
 
 
-def load_ranks(save_dir, num_users=5000, cross_domain=False):
+def load_ranks(save_dir, num_users=5000, cross_domain=False, 
+               DP=False, l2_norm_clip=0.15, noise_multiplier=1.1):
     ranks = []
     labels = []
     y = []
     for i in range(num_users):
-        save_path = save_dir + 'rank_u{}_y1{}.npz'.format(i, '_cd' if cross_domain else '')
+
+        if DP:
+            save_path = save_dir + 'rank_u{}_y1_dp_l2_{}_noise_{}{}.npz'.format(
+                i, l2_norm_clip, noise_multiplier, '_cd' if cross_domain else '')
+        else:
+            save_path = save_dir + 'rank_u{}_y1{}.npz'.format(
+                i, '_cd' if cross_domain else '')
+            
+        # save_path = save_dir + 'rank_u{}_y1{}.npz'.format(i, '_cd' if cross_domain else '')
         if os.path.exists(save_path):
             f = np.load(save_path)
             train_rs, train_ls = f['arr_0'], f['arr_1']
@@ -63,7 +72,14 @@ def load_ranks(save_dir, num_users=5000, cross_domain=False):
             labels.append(train_ls)
             y.append(1)
 
-        save_path = save_dir + 'rank_u{}_y0{}.npz'.format(i, '_cd' if cross_domain else '')
+        if DP:
+            save_path = save_dir + 'rank_u{}_y0_dp_l2_{}_noise_{}{}.npz'.format(
+                i, l2_norm_clip, noise_multiplier, '_cd' if cross_domain else '')
+        else:
+            save_path = save_dir + 'rank_u{}_y0{}.npz'.format(
+                i, '_cd' if cross_domain else '')
+
+        # save_path = save_dir + 'rank_u{}_y0{}.npz'.format(i, '_cd' if cross_domain else '')
         if os.path.exists(save_path):
             f = np.load(save_path)
             test_rs, test_ls = f['arr_0'], f['arr_1']
@@ -151,7 +167,8 @@ def ranks_to_feats(ranks, labels=None, prop=1.0, dim=100, num_words=5000, top_wo
 
 def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=1.0, user_data_ratio=0.,
                    heldout_ratio=0., num_words=5000, top_words=5000, relative=False, rare=False, norm=True,
-                   scale=True, cross_domain=False, rerun=False):
+                   scale=True, cross_domain=False, rerun=False,
+                   DP=False, l2_norm_clip=0.15, noise_multiplier=1.1):
 
     if data_name == 'reddit':
         result_path = REDDIT_OUTPUT_PATH
@@ -165,15 +182,23 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
     if dim > top_words:
         dim = top_words
 
-    audit_save_path = result_path + 'mi_data_dim{}_prop{}_{}{}.npz'.format(
-        dim, prop, num_users, '_cd' if cross_domain else '')
+    if DP:
+        dp_tag = '_dp_l2_{}_noise_{}'.format(l2_norm_clip, noise_multiplier)
+        audit_save_path = result_path + \
+            'mi_data_dim{}_prop{}_{}{}{}.npz'.format(
+                dim, prop, num_users, dp_tag, '_cd' if cross_domain else '')
+    else:
+        audit_save_path = result_path + 'mi_data_dim{}_prop{}_{}{}.npz'.format(
+            dim, prop, num_users, '_cd' if cross_domain else '')
 
     if not rerun and os.path.exists(audit_save_path):
         f = np.load(audit_save_path)
         X_train, y_train, X_test, y_test = [f['arr_{}'.format(i)] for i in range(4)]
     else:
         save_dir = result_path + 'target_{}{}/'.format(num_users, '_dr' if 0. < user_data_ratio < 1. else '')
-        ranks, labels, y_test = load_ranks(save_dir, num_users)
+        ranks, labels, y_test = load_ranks(save_dir, num_users, 
+                                           DP=DP, l2_norm_clip=l2_norm_clip, 
+                                           noise_multiplier=noise_multiplier)
         valid_indices = [i for i, r in enumerate(ranks) if len(r) > 0]
         ranks = [ranks[i] for i in valid_indices]
         y_test = np.array([y_test[i] for i in valid_indices])
@@ -217,9 +242,27 @@ def user_mi_attack(data_name='reddit', num_exp=5, num_users=5000, dim=100, prop=
 
     # 20192101. LIN, Y.D. Store all true positives and false postives
     fpr, tpr, ths = roc_curve(y_test, y_score)
-    tpr_path = os.path.join(result_path, f'audit_{data_name}_{num_users}_tpr.pkl')
-    fpr_path = os.path.join(result_path, f'audit_{data_name}_{num_users}_fpr.pkl')
-    ths_path = os.path.join(result_path, f'audit_{data_name}_{num_users}_thresholds.pkl')
+    if DP:
+        tpr_path = os.path.join(
+            result_path, 
+            'audit_{}_{}{}_tpr.pkl'.format(data_name, num_users, dp_tag))
+        fpr_path = os.path.join(
+            result_path, 
+            'audit_{}_{}{}_fpr.pkl'.format(data_name, num_users, dp_tag))
+        ths_path = os.path.join(
+            result_path, 
+            'audit_{}_{}{}_thresholds.pkl'.format(data_name, num_users, dp_tag))
+    else:
+        tpr_path = os.path.join(
+            result_path, 
+            'audit_{}_{}_tpr.pkl'.format(data_name, num_users))
+        fpr_path = os.path.join(
+            result_path, 
+            'audit_{}_{}_fpr.pkl'.format(data_name, num_users))
+        ths_path = os.path.join(
+            result_path, 
+            'audit_{}_{}_thresholds.pkl'.format(data_name, num_users))
+
     tpr_path_file = open(tpr_path, 'wb')
     fpr_path_file = open(fpr_path, 'wb')
     ths_path_file = open(ths_path, 'wb')
