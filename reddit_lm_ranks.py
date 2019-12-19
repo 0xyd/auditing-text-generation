@@ -244,10 +244,22 @@ def rank_lists(lists):
 
 
 def save_users_rank_results(users, user_comments, vocabs, prob_fn, save_dir, member_label=1,
-                            cross_domain=False, save_probs=False, trg_prob_only=False, rerun=False):
+                            cross_domain=False, save_probs=False, trg_prob_only=False, rerun=False,
+                            DP=False, l2_norm_clip=0.15, noise_multiplier=1.1):
     for i, u in enumerate(users):
-        save_path = save_dir + 'rank_u{}_y{}{}.npz'.format(i, member_label, '_cd' if cross_domain else '')
-        prob_path = save_dir + 'prob_u{}_y{}{}.npz'.format(i, member_label, '_cd' if cross_domain else '')
+
+        if DP:
+            save_path = save_dir + 'rank_u{}_y{}_dp_l2_{}_noise_{}{}.npz'.format(
+                i, member_label, l2_norm_clip, 
+                noise_multiplier, '_cd' if cross_domain else '')
+            prob_path = save_dir + 'prob_u{}_y{}_dp_l2_{}_noise_{}{}.npz'.format(
+                i, member_label, l2_norm_clip, 
+                noise_multiplier, '_cd' if cross_domain else '')
+        else:
+            save_path = save_dir + 'rank_u{}_y{}{}.npz'.format(
+                i, member_label, '_cd' if cross_domain else '')
+            prob_path = save_dir + 'prob_u{}_y{}{}.npz'.format(
+                i, member_label, '_cd' if cross_domain else '')
 
         if os.path.exists(save_path) and not save_probs and not rerun:
             continue
