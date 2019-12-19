@@ -346,9 +346,11 @@ def get_target_ranks(num_users=100, num_words=5000, h=128, emb_h=256, rerun=Fals
     prob_fn = K.function([input_var, label_var, K.learning_phase()], [prediction])
 
     save_users_rank_results(train_users, train_user_comments, cross_domain=False, rerun=rerun,
-                            vocabs=vocabs, prob_fn=prob_fn, save_dir=save_dir, member_label=1)
+                            vocabs=vocabs, prob_fn=prob_fn, save_dir=save_dir, member_label=1,
+                            DP=DP, l2_norm_clip=l2_norm_clip, noise_multiplier=noise_multiplier)
     save_users_rank_results(test_users, test_user_comments, cross_domain=False, rerun=rerun,
-                            vocabs=vocabs, prob_fn=prob_fn, save_dir=save_dir, member_label=0)
+                            vocabs=vocabs, prob_fn=prob_fn, save_dir=save_dir, member_label=0,
+                            DP=DP, l2_norm_clip=l2_norm_clip, noise_multiplier=noise_multiplier)
 
 
 def read_translated_comments(users, vocabs, multi_step=False, trans='yandex'):
