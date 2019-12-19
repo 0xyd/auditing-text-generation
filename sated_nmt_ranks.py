@@ -192,10 +192,22 @@ def get_ranks(user_src_data, user_trg_data, pred_fn, save_probs=False):
 
 
 def save_users_rank_results(users, user_src_texts, user_trg_texts, src_vocabs, trg_vocabs, prob_fn, save_dir,
-                            member_label=1, cross_domain=False, save_probs=False, mask=False, rerun=False):
+                            member_label=1, cross_domain=False, save_probs=False, mask=False, rerun=False,
+                            DP=False, l2_norm_clip=0.15, noise_multiplier=1.1):
     for i, u in enumerate(users):
-        save_path = save_dir + 'rank_u{}_y{}{}.npz'.format(i, member_label, '_cd' if cross_domain else '')
-        prob_path = save_dir + 'prob_u{}_y{}{}.npz'.format(i, member_label, '_cd' if cross_domain else '')
+
+        if DP:
+            save_path = save_dir + 'rank_u{}_y{}_dp_l2_{}_noise_{}{}.npz'.format(
+                i, member_label, l2_norm_clip, 
+                noise_multiplier, '_cd' if cross_domain else '')
+            prob_path = save_dir + 'prob_u{}_y{}_dp_l2_{}_noise_{}{}.npz'.format(
+                i, member_label, l2_norm_clip, 
+                noise_multiplier, '_cd' if cross_domain else '')
+        else:
+            save_path = save_dir + 'rank_u{}_y{}{}.npz'.format(
+                i, member_label, '_cd' if cross_domain else '')
+            prob_path = save_dir + 'prob_u{}_y{}{}.npz'.format(
+                i, member_label, '_cd' if cross_domain else '')
 
         if os.path.exists(save_path) and not save_probs and not rerun:
             continue
@@ -265,7 +277,7 @@ def get_shadow_ranks(exp_id=0, num_users=200, num_words=5000, mask=False, h=128,
 
 
 def get_target_ranks(num_users=200, num_words=5000, mask=False, h=128, emb_h=128, user_data_ratio=0.,
-                     tied=False, save_probs=False):
+                     tied=False, save_probs=False, DP=False, l2_norm_clip=0.15, noise_multiplier=1.1):
     user_src_texts, user_trg_texts, test_user_src_texts, test_user_trg_texts, src_vocabs, trg_vocabs \
         = load_sated_data_by_user(num_users, num_words, test_on_user=True, user_data_ratio=user_data_ratio)
 
@@ -287,8 +299,12 @@ def get_target_ranks(num_users=200, num_words=5000, mask=False, h=128, emb_h=128
             user_trg_texts[u] += heldout_trg_texts[u]
 
     model = build_nmt_model(Vs=num_words, Vt=num_words, mask=mask, drop_p=0., h=h, demb=emb_h, tied=tied)
-    # 20191110 LIN, Y.D. The function train_sated_nmt has loo which is 0 in the naming in default
-    model.load_weights(MODEL_PATH + '{}0_{}.h5'.format(model_path, num_users))
+
+    if DP:
+        model.load_weights(MODEL_PATH + '{}0_dp_l2_{}_noise_{}_{}.h5'.format(
+            model_path, l2_norm_clip, noise_multiplier, num_users))
+    else:
+        model.load_weights(MODEL_PATH + '{}0_{}.h5'.format(model_path, num_users))
     # model.load_weights(MODEL_PATH + '{}_{}.h5'.format(model_path, num_users))
 
     src_input_var, trg_input_var = model.inputs
@@ -301,11 +317,13 @@ def get_target_ranks(num_users=200, num_words=5000, mask=False, h=128, emb_h=128
     save_users_rank_results(users=train_users, save_probs=save_probs,
                             user_src_texts=user_src_texts, user_trg_texts=user_trg_texts,
                             src_vocabs=src_vocabs, trg_vocabs=trg_vocabs, cross_domain=False,
-                            prob_fn=prob_fn, save_dir=save_dir, member_label=1)
+                            prob_fn=prob_fn, save_dir=save_dir, member_label=1,
+                            DP=DP, l2_norm_clip=l2_norm_clip, noise_multiplier=noise_multiplier)
     save_users_rank_results(users=test_users, save_probs=save_probs,
                             user_src_texts=test_user_src_texts, user_trg_texts=test_user_trg_texts,
                             src_vocabs=src_vocabs, trg_vocabs=trg_vocabs, cross_domain=False,
-                            prob_fn=prob_fn, save_dir=save_dir, member_label=0)
+                            prob_fn=prob_fn, save_dir=save_dir, member_label=0,
+                            DP=DP, l2_norm_clip=l2_norm_clip, noise_multiplier=noise_multiplier)
 
 
 def ranks_to_feats(ranks, prop=1.0, dim=100, num_words=5000, shuffle=True):
