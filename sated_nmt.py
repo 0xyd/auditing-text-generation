@@ -262,8 +262,8 @@ def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, 
         if DP and len(batch) < batch_size:
             continue
         src_input, trg_input = batch
-        src_input = pad_texts(src_input, src_vocabs['<eos>'], mask=mask, DP=DP)
-        trg_input = pad_texts(trg_input, trg_vocabs['<eos>'], mask=mask, DP=DP)
+        src_input = pad_texts(src_input, src_vocabs['<eos>'], mask=mask)
+        trg_input = pad_texts(trg_input, trg_vocabs['<eos>'], mask=mask)
         batches.append((src_input, trg_input))
 
 
