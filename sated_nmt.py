@@ -280,8 +280,8 @@ def train_sated_nmt(loo=0, num_users=200, num_words=5000, num_epochs=20, h=128, 
             src_input, trg_input = batch
             _ = train_fn([src_input, trg_input[:, :-1], trg_input[:, 1:], 1])[0]
 
-        train_loss, train_it = get_perp(train_src_texts, train_trg_texts, pred_fn, shuffle=True, prop=train_prop, DP=True)
-        test_loss, test_it = get_perp(dev_src_texts, dev_trg_texts, pred_fn, DP=True)
+        train_loss, train_it = get_perp(train_src_texts, train_trg_texts, pred_fn, shuffle=True, prop=train_prop, DP=DP)
+        test_loss, test_it = get_perp(dev_src_texts, dev_trg_texts, pred_fn, DP=DP)
 
 
         # 20191129. LIN, Y.D. Record loss, perplexity resutls for training and testing
