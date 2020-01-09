@@ -190,7 +190,7 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
     trg_label_var = K.placeholder((None, None), dtype='float32')
 
     loss = K.sparse_categorical_crossentropy(trg_label_var, prediction, from_logits=True)
-    
+
     if DP:
         optimizer = DPAdamGaussianOptimizer(
             l2_norm_clip=l2_norm_clip, noise_multiplier=noise_multiplier, 
@@ -201,6 +201,7 @@ def train_cornell_movie(loo=0, num_users=200, num_words=5000, num_epochs=20, sam
         loss = K.mean(K.sum(loss, axis=-1))
         optimizer = Adam(lr=lr, clipnorm=5)
         updates = optimizer.get_updates(loss, model.trainable_weights)
+        
     # loss = K.mean(K.sum(loss, axis=-1))
 
     # optimizer = Adam(lr=lr)
